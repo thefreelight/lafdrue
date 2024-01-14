@@ -1,20 +1,22 @@
 version: '3.8'
 services:
   fastapi:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - /app/__pycache__
-    command: uvicorn main:app --host 127.0.0.1 --reload
-    depends_on:
-      - db
     environment:
       - DATABASE_URL=mysql+mysqlconnector://root:123456@db:3306/lafdru
+    depends_on:
+      - db
 
   vue:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     volumes:
@@ -24,13 +26,12 @@ services:
   db:
     image: mysql:8.0
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_DATABASE: lafdru
       MYSQL_ROOT_PASSWORD: 123456
     volumes:
       - mysql_data:/var/lib/mysql
-
 
 volumes:
   mysql_data:
