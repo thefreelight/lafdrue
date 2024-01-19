@@ -13,14 +13,24 @@ services:
     depends_on:
       - db
 
-  vue:
+  frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "3001:3001"
     volumes:
       - ./frontend:/app
+      - /app/node_modules
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./admin:/app
       - /app/node_modules
 
   db:

@@ -1,17 +1,21 @@
-# routes/product.py
-from fastapi import APIRouter, Depends, HTTPException
+# product.py
+from fastapi import APIRouter, Depends,Query
 from sqlalchemy.orm import Session
-from ..schemas.product import ProductCreate, Product
-from ..services.crud_product import create_product,decrease_product_stock
-from ..database import SessionLocal
+from ..services import product as product_service
+from ..dependencies.database import get_db
+from ..schemas.product import Product, ProductCreate
+from typing import List
+
 
 router = APIRouter()
 
-@router.post("/products/", response_model=Product)
-def create_product_view(product: ProductCreate, db: Session = Depends(SessionLocal)):
-    return create_product(db=db, product=product)
+@router.get("/products/", response_model=List[Product])
+def read_products(skip: int = Query(0, ge=0), limit: int = Query(10, ge=1), db: Session = Depends(get_db)):
+    return product_service.get_products(db, skip=skip, limit=limit)
 
-# 添加更多路由，如获取商品列表、获取特定商品、更新和删除商品
-@router.post("/products/{product_id}/decrease_stock")
-def decrease_stock(product_id: int, quantity: int, db: Session = Depends(SessionLocal)):
-    return decrease_product_stock(db, product_id, quantity)
+@router.post("/products/", response_model=Product)
+def create_new_product(product: ProductCreate, db: Session = Depends(get_db)):
+    return product_service.create_product(db, product=product)
+
+
+

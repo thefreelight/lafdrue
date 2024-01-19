@@ -1,9 +1,9 @@
-# schemas/product.py
+# product.py
 from pydantic import BaseModel
 
 class ProductBase(BaseModel):
     name: str
-    description: str
+    category: str
     price: float
 
 class ProductCreate(ProductBase):
@@ -13,4 +13,4 @@ class Product(ProductBase):
     id: int
 
     class Config:
-        from_attributes = True  # 之前是 orm_mode = True
+        from_attributes = True  # 替换原来的 orm_mode = True

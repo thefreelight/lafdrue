@@ -8,7 +8,7 @@ WORKDIR /backend
 COPY . /backend
 
 # 安装 requirements.txt 中的所有依赖
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # 暴露端口 8000 供外部访问
 EXPOSE 8000

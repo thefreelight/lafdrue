@@ -1,11 +1,12 @@
-from sqlalchemy import Column, Integer, String, Float
-from ..database import Base
+from sqlalchemy import Column, Integer, String, Float, Text
+from ..dependencies.database import Base
 
 class Product(Base):
     __tablename__ = "products"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    description = Column(String, index=True)
+    name = Column(String(255), index=True)  # 指定长度为 255
+    category = Column(String(255), index=True)  # 指定长度为 255
     price = Column(Float)
-    stock = Column(Integer, default=0)
+    description = Column(Text)  # Text 类型不需要指定长度
+    image_url = Column(String(500), index=True)  # 指定长度为 255

@@ -10,11 +10,12 @@ COPY package.json yarn.lock ./
 # 安装依赖
 RUN yarn
 
+
 # 复制前端项目代码
 COPY . .
 
 # 暴露 Vite 默认端口，通常是 3000
-EXPOSE 3001
+EXPOSE 3000
 
 # 启动开发服务器
 CMD ["yarn", "dev"]
