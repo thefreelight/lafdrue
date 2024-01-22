@@ -1,20 +1,24 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException,Request
 from sqlalchemy.orm import Session
 from ..schemas.order import OrderCreateSchema
 from ..services.order import create_order
 from ..dependencies.database import get_db
+from pydantic import ValidationError
+
 
 router = APIRouter()
 
 @router.post("/orders/", response_model=OrderCreateSchema)
-async def create_order_endpoint(request: Request, db: Session = Depends(get_db)):
-    print(f"Request headers: {request.headers}")
-    print(f"Request body: {await request.json()}")
-
+async def create_order_endpoint(order_create: OrderCreateSchema, db: Session = Depends(get_db)):
     try:
-        order_create = await request.json()
-        return create_order(db=db, order_create=order_create)
+        created_order = create_order(db=db, order_create=order_create)
+        db.commit()
+        return created_order
     except Exception as e:
-        db.rollback()  # 发生异常时回滚数据库事务
-        print(f"Error creating order: {e}")  # 打印错误信息
+        print(e)
+        db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
+    except ValidationError as e:
+        # 这里捕获Pydantic的验证错误，并返回具体的错误信息
+        raise HTTPException(status_code=422, detail=e.errors())
+

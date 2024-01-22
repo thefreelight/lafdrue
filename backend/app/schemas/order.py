@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,EmailStr
 from typing import List
 
 class OrderItemSchema(BaseModel):
@@ -7,7 +7,7 @@ class OrderItemSchema(BaseModel):
     price: float
 
 class OrderCreateSchema(BaseModel):
-    user_email: str
+    user_email: EmailStr  # 使用 EmailStr 来确保邮箱格式正确
     items: List[OrderItemSchema]
 
 class OrderSchema(OrderCreateSchema):

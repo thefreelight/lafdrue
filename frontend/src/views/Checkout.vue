@@ -29,7 +29,7 @@
             </label>
             <input
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email" type="email" placeholder="您的邮箱">
+                id="email" type="email" placeholder="您的邮箱" v-model="userEmail" >
           </div>
 
 
@@ -74,6 +74,12 @@ import { mapState } from 'vuex';
 import axios from '../axios'; // 确保你已经安装并正确配置了axios
 
 export default {
+    data() {
+    return {
+      userEmail: '',
+      // ... 其他数据属性 ...
+    };
+  },
   name: 'Checkout',
   computed: {
     ...mapState('cart', ['items']),
@@ -88,8 +94,19 @@ export default {
   },
   methods: {
     submitOrder() {
+      // 假设你已经在Vuex状态中存储了用户的邮箱，或者它已经在表单中输入。
+      // 例如，让我们说它是一个计算属性，从Vuex状态获取用户的邮箱：
+      const userEmail = this.userEmail;
+      // 准备正确字段名为产品ID的商品项。
+      const itemsWithProductId = this.items.map(item => ({
+    product_id: item.id, // 将'id'重命名为'product_id'
+    quantity: item.quantity,
+    price: item.price
+  }));
+
       const orderData = {
-        items: this.items,
+        user_email: userEmail, // 包含用户的邮箱
+        items: itemsWithProductId, // 使用更新后的商品项数组
         totalAmount: this.totalPrice,
         paymentMethod: this.selectedPaymentMethod,
         // 其他订单相关信息，比如用户信息等
