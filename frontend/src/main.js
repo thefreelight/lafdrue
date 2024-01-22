@@ -16,5 +16,8 @@ app.use(store);
 app.use(router);
 app.mount('#app');
 
+// 在挂载之前加载购物车
+store.dispatch('cart/loadCart');
+
 // 注册 FontAwesomeIcon 组件
 app.component('font-awesome-icon', FontAwesomeIcon);

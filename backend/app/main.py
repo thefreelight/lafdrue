@@ -5,6 +5,8 @@ from .dependencies.database import engine, Base
 
 
 from .routes import product
+from .routes import category
+from .routes import order
 
 Base.metadata.create_all(bind=engine)  #创建数据库
 
@@ -19,3 +21,5 @@ app.add_middleware(
 )
 
 app.include_router(product.router)
+app.include_router(category.router)
+app.include_router(order.router)

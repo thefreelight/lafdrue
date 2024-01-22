@@ -17,7 +17,7 @@ export const products = {
   },
   actions: {
     fetchProducts({ commit }) {
-      axios.get('/api/products')
+      axios.get('/products')
         .then(response => {
           commit('SET_PRODUCTS', response.data);
         })
@@ -26,7 +26,7 @@ export const products = {
         });
     },
     fetchCategories({ commit }) {
-      axios.get('/api/categories')
+      axios.get('/categories')
         .then(response => {
           commit('SET_CATEGORIES', response.data);
         })

@@ -1,39 +1,69 @@
-// src/components/ProductList.vue
 <template>
-  <div class="product-list-container">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>商品名称</th>
-          <th>库存</th>
-          <th>价格</th>
-          <th class="actions-header"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="product in products" :key="product.id" class="product-row">
-          <td>{{ product.name }}</td>
-          <td>{{ product.stock }} pcs</td>
-          <td>${{ product.price }}</td>
-          <td class="actions">
-            <button @click="handleAddToCart(product)" class="btn btn-cart">加入购物车</button>
-            <button @click="buyProduct(product)" class="btn btn-buy">购买</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="container mx-auto mt-10">
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white">
+        <thead class="text-white bg-gray-800">
+          <tr>
+            <th class="py-3 px-4 uppercase font-semibold text-sm">商品名称</th>
+            <th class="py-3 px-4 uppercase font-semibold text-sm">库存</th>
+            <th class="py-3 px-4 uppercase font-semibold text-sm">价格</th>
+            <th class="py-3 px-4 uppercase font-semibold text-sm">操作</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700">
+          <tr v-for="product in products" :key="product.id" class="border-t hover:bg-gray-100">
+            <td class="py-3 px-4">{{ product.name }}</td>
+            <td class="py-3 px-4">{{ product.stock }} pcs</td>
+            <td class="py-3 px-4">${{ product.price }}</td>
+            <td class="py-3 px-4 flex justify-end items-center">
+              <button @click="handleAddToCart(product)"
+                      class="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                      type="button">
+                加入购物车
+              </button>
+              <button @click="buyProduct(product)"
+                      class="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                      type="button">
+                购买
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
+  <!-- 模态框开始 -->
+  <div v-if="showModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="mt-3 text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+          <!-- 这里可以放置一个图标 -->
+        </div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">{{ modalMessage }}</h3>
+        <div class="mt-5 sm:mt-6">
+          <button @click="closeModal" class="text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded">
+            确定
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 模态框结束 -->
 </template>
 
 
 <script>
 import axios from '../axios';
 import { mapGetters, mapActions } from 'vuex';
+import { useRouter } from 'vue-router';
+
 
 
 export default {
   data() {
     return {
+      showModal: false,
+      modalMessage: '',
       products: [],
     };
   },
@@ -49,87 +79,38 @@ export default {
     ...mapGetters('cart', ['totalItems']),
   },
   methods: {
-    ...mapActions('cart', ['addToCart', 'toggleCartDropdown']),
+    ...mapActions('cart', ['addToCart','saveCart']),
 
-    // ...fetchProducts, fetchCategories, etc.
     // 重命名组件内的方法以避免与 Vuex action 冲突
     handleAddToCart(product) {
-      // 调用 Vuex action
-      this.addToCart(product);
-    },
+    // 首先检查库存
+    if (product.stock <= 0) {
+      this.modalMessage = '抱歉，该商品库存不足，无法购买。';
+      this.showModal = true;
+    } else {
+      // 如果库存足够，添加到购物车
+      this.addToCart(product).then(() => {
+        // 商品添加到购物车后，保存购物车状态
+        this.saveCart();
+      });
+    }
+  },
     buyProduct(product) {
       // TODO: 实现购买商品的逻辑
-      alert(`产品 "${product.name}" 购买成功。`);
-      console.log('Product purchased:', product);
-    }
-  }
+      // 使用编程式导航跳转到商品详情页
+      if (product.stock === 0) {
+        this.modalMessage = '抱歉，该商品库存不足，无法购买。';
+        this.showModal = true;
+        return;
+      }
+      const router = this.$router;
+      router.push({ name: 'ProductDetails', params: { id: product.id } });
+    },
+    closeModal() {
+      this.showModal = false;
+    },
+  },
 };
 </script>
 
-<style scoped>
-.product-list-container {
-  max-width: 1000px;
-  margin: auto;
-  border-collapse: collapse;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table thead {
-  background-color: #4CAF50;
-}
-
-.table thead th {
-  color: white;
-  padding: 15px;
-  text-align: left;
-}
-
-.actions-header {
-  text-align: right;
-}
-
-.product-row {
-  transition: background-color 0.3s ease;
-}
-
-.product-row:hover {
-  background-color: #f5f5f5;
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px;
-}
-
-.btn {
-  padding: 10px 20px;
-  margin-left: 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-cart {
-  background-color: #5cb85c;
-  color: white;
-}
-
-.btn-cart:hover {
-  background-color: #4cae4c;
-}
-
-.btn-buy {
-  background-color: #007bff;
-  color: white;
-}
-
-.btn-buy:hover {
-  background-color: #0056b3;
-}
-</style>
 

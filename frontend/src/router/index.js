@@ -3,9 +3,10 @@ import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
 import Products from '../components/ProductList.vue'; // 确保已经创建了这个视图组件
-import Cart from '../views/Cart.vue';
+import Cart from '../components/Cart.vue';
 import Checkout from '../views/Checkout.vue';
-import ProductDetail from '../views/ProductDetail.vue'; // 引入商品详情组件
+import ProductDetails from "../components/ProductDetails.vue";
+import PaymentPage from '../views/PaymentPage.vue';
 
 
 const routes = [
@@ -15,8 +16,8 @@ const routes = [
   { path: '/products', component: Products },
   { path: '/cart', component: Cart },
   { path: '/checkout', component: Checkout },
-  { path: '/product/:id', name: 'ProductDetail', component: ProductDetail },
-
+  { path: '/payment', component: PaymentPage },
+  { path: '/products/:id', name: 'ProductDetails', component: ProductDetails }
   // 其他路由...
 ];
 

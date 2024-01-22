@@ -1,106 +1,58 @@
 <template>
-  <transition name="dropdown">
-    <div v-if="isDropdownVisible" class="cart-dropdown">
-      <div class="cart-items">
-        <div class="cart-item" v-for="item in cartItems" :key="item.id">
-          <div class="item-details">
-            <span class="name">{{ item.name }}</span>
-            <span class="price">{{ item.quantity }} x ${{ item.price }}</span>
-          </div>
-          <button class="remove-item" @click="removeFromCart(item.id)">&times;</button>
-        </div>
-      </div>
-      <router-link to="/checkout" class="checkout-button">Checkout</router-link>
+  <div class="relative inline-block text-right">
+    <!-- Cart Icon with Badge -->
+<div @click="toggleDropdown" class="cursor-pointer">
+      <!-- FontAwesome Icon -->
+      <font-awesome-icon :icon="['fas', 'shopping-cart']" class="text-white text-xl" />
+      <!-- Conditional Badge -->
+      <span v-if="totalItems" class="badge">
+        {{ totalItems }}
+      </span>
     </div>
-  </transition>
+    <!-- Dropdown Menu -->
+    <div v-if="isDropdownVisible" class="absolute right-0 z-50 w-64 mt-2 bg-white rounded-lg shadow-lg overflow-hidden">
+      <!-- Dropdown content -->
+    </div>
+  </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  name: 'CartDropdown',
+  data() {
+    return {
+      isDropdownVisible: false,
+      cartCount: 0, // 购物车商品计数
+    };
+  },
   computed: {
-    ...mapState({
-      isDropdownVisible: state => state.cart.isCartDropdownVisible,
-      cartItems: state => state.cart.items,
-    }),
+    // 使用 Vuex getter 来获取购物车物品总数
+    ...mapGetters('cart', ['totalItems','isDropdownVisible'])
   },
   methods: {
-    ...mapActions('cart', ['removeFromCart']),
+    ...mapActions('cart', ['toggleCartDropdown']),
+    toggleDropdown() {
+      this.toggleCartDropdown();
+    },
+    addToCart() {
+      // 增加购物车商品数量
+      this.cartCount++;
+    },
   },
 };
 </script>
 
 <style scoped>
-.cart-dropdown {
-  display: block;
+.badge {
   position: absolute;
-  right: 35px; /* Adjusted for better alignment */
-  top: 100%; /* Align below the Navbar */
-  background-color: white;
-  border: 1px solid rgba(0,0,0,.1);
-  border-radius: 4px;
-  width: 300px;
-  padding: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,.15);
-  z-index: 10;
-}
-
-.dropdown-enter-active, .dropdown-leave-active {
-  transition: opacity .3s;
-}
-
-.dropdown-enter, .dropdown-leave-to {
-  opacity: 0;
-}
-
-.cart-items {
-  max-height: 340px;
-  overflow-y: auto;
-}
-
-.cart-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eaeaea;
-}
-
-.item-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.name {
-  font-size: 16px;
-  color: #333;
-}
-
-.price {
-  font-size: 14px;
-  color: #555;
-}
-
-.remove-item {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #999;
-  font-size: 24px;
-}
-
-.checkout-button {
-  display: block;
-  width: 100%;
-  padding: 10px 20px;
-  background-color: #5c6bc0;
+  top: -2px;
+  right: -2px;
+  background-color: red;
   color: white;
+  border-radius: full;
+  padding: 0.5rem;
+  font-size: 0.75rem;
   text-align: center;
-  border-radius: 4px;
-  text-decoration: none;
-  margin-top: 20px;
 }
 </style>

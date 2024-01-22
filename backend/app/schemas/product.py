@@ -1,16 +1,29 @@
-# product.py
 from pydantic import BaseModel
+from typing import Optional
+from datetime import datetime
+
+from .category import Category
 
 class ProductBase(BaseModel):
     name: str
-    category: str
+    brand: Optional[str] = None
     price: float
+    stock: Optional[int] = 0
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    status: Optional[str] = None
 
 class ProductCreate(ProductBase):
-    pass
+    category_id: int
 
 class Product(ProductBase):
     id: int
+    sku: Optional[str] = None
+    ratings: float
+    is_featured: bool
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    category: Category
 
     class Config:
         from_attributes = True  # 替换原来的 orm_mode = True

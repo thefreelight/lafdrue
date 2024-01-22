@@ -1,9 +1,20 @@
 version: '3.8'
 services:
-  fastapi:
+  db:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: lafdru
+      MYSQL_ROOT_PASSWORD: 123456
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    command: bash -c "./start-backend.sh"
     ports:
       - "8000:8000"
     volumes:
@@ -33,15 +44,8 @@ services:
       - ./admin:/app
       - /app/node_modules
 
-  db:
-    image: mysql:8.0
-    ports:
-      - "3307:3306"
-    environment:
-      MYSQL_DATABASE: lafdru
-      MYSQL_ROOT_PASSWORD: 123456
-    volumes:
-      - mysql_data:/var/lib/mysql
+
+
 
 volumes:
   mysql_data:

@@ -5,8 +5,7 @@
       <p class="text-xl mt-4">高效、稳定、快速的自动售货解决方案</p>
     </div>
     <div>
-    <CategorySelector :categories="categories" @category-changed="onCategoryChanged" />
-    <ProductList :categoryId="selectedCategoryId" />
+    <ProductList  />
   </div>
     <div class="features-section p-10">
       <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -31,14 +30,12 @@
 </template>
 
 <script>
-import CategorySelector from '../components/CategorySelector.vue';
 import ProductList from '../components/ProductList.vue';
 import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'Home',
   components: {
-    CategorySelector,
     ProductList
   }
 };

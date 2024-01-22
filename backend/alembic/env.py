@@ -1,22 +1,24 @@
 from logging.config import fileConfig
-
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
 from alembic import context
-
 import sys
 from pathlib import Path
 import os
-
-# 将项目根目录添加到 sys.path
-root_dir = Path(__file__).resolve().parents[2]
-sys.path.append(str(root_dir))
-
 # 现在可以使用绝对导入
-from backend.app.dependencies.database import Base, engine
 
-# Alembic 的其他配置...
+# 这是一个很重要的步骤，它告诉 Alembic 去哪里找到模型
+sys.path.append(str(Path(__file__).resolve().parents[2]))
+from backend.app.dependencies.database import Base
+
+
+# Alembic Config对象，提供.ini文件中的值的访问
+config = context.config
+
+# 如果存在ini文件，则为Python日志配置
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
 
 
 # this is the Alembic Config object, which provides
