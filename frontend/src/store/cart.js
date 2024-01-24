@@ -49,5 +49,9 @@ export const cart = {
     toggleCartDropdown({ commit }) {
       commit('TOGGLE_CART_DROPDOWN');
     },
+    clearCart({ commit }) {
+    commit('SET_CART_ITEMS', []); // 清空购物车
+    localStorage.removeItem('cart'); // 清除本地存储中的购物车数据
+  },
   }
 };

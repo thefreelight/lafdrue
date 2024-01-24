@@ -32,34 +32,22 @@
       </table>
     </div>
   </div>
-  <!-- 模态框开始 -->
-  <div v-if="showModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-      <div class="mt-3 text-center">
-        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-          <!-- 这里可以放置一个图标 -->
-        </div>
-        <h3 class="text-lg leading-6 font-medium text-gray-900">{{ modalMessage }}</h3>
-        <div class="mt-5 sm:mt-6">
-          <button @click="closeModal" class="text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded">
-            确定
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- 模态框结束 -->
+
+  <!-- Modal组件的使用 -->
+  <Modal :isVisible="showModal" :message="modalMessage" @close="showModal = false"/>
 </template>
 
 
 <script>
 import axios from '../axios';
 import { mapGetters, mapActions } from 'vuex';
-import { useRouter } from 'vue-router';
-
+import Modal from "./Modal.vue";
 
 
 export default {
+  components: {
+    Modal
+  },
   data() {
     return {
       showModal: false,

@@ -22,21 +22,34 @@
         </li>
       </ul>
       <div class="px-4 py-3 flex justify-end">
-      <router-link to="/checkout" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      <button @click="handleCheckout" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           结算
-      </router-link>
+      </button>
       </div>
     </div>
   </div>
+
+  <!-- Modal组件的使用 -->
+  <Modal :isVisible="showModal" :message="modalMessage" @close="showModal = false"/>
 </template>
 
 <script>
 import {mapState, mapMutations, mapActions,mapGetters} from 'vuex';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import Modal from "../components/Modal.vue";
+
 
 export default {
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    Modal
+  },
+  data() {
+    return {
+      showModal: false,
+      modalMessage: '您的购物车为空，快去添加一些商品吧！'
+      // ...
+    };
   },
   mounted() {
     this.$store.dispatch('cart/loadCart');
@@ -65,6 +78,13 @@ export default {
       this.toggleCartDropdown();
     }
   },
+    handleCheckout() {
+      if (this.totalItems === 0) {
+        this.showModal = true;
+      } else {
+        this.$router.push('/checkout');
+      }
+    },
 
   },
 };

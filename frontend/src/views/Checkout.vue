@@ -70,19 +70,21 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions, mapGetters} from 'vuex';
 import axios from '../axios'; // 确保你已经安装并正确配置了axios
+
 
 export default {
     data() {
     return {
       userEmail: '',
-      // ... 其他数据属性 ...
+      isSubmitting: false, // 添加一个新的数据属性来跟踪提交状态
     };
   },
   name: 'Checkout',
   computed: {
     ...mapState('cart', ['items']),
+    ...mapGetters('cart', ['isCartEmpty']), // 使用 getter 检查购物车是否为空
     totalPrice() {
       return this.items.reduce((total, item) => total + item.quantity * item.price, 0);
     },
@@ -93,7 +95,10 @@ export default {
     }
   },
   methods: {
+    ...mapActions('cart', ['clearCart']), // 映射 Vuex actions
     submitOrder() {
+      if (this.isSubmitting) return; // 如果正在提交，则返回以防止重复提交
+      this.isSubmitting = true; // 设置提交状态为 true
       // 假设你已经在Vuex状态中存储了用户的邮箱，或者它已经在表单中输入。
       // 例如，让我们说它是一个计算属性，从Vuex状态获取用户的邮箱：
       const userEmail = this.userEmail;
@@ -115,6 +120,7 @@ export default {
       // 发送订单数据到后端
       axios.post('/orders/', orderData)
         .then(response => {
+          this.clearCart(); // 清空购物车
           // 假设后端返回了支付页面所需的信息
           const paymentInfo = response.data;
           // 导航到支付页面，并传递支付信息
@@ -123,6 +129,9 @@ export default {
         .catch(error => {
           console.error('订单提交失败:', error);
           // 这里应该处理错误，比如显示一个错误消息给用户
+        })
+        .finally(() => {
+          this.isSubmitting = false; // 请求完成后，无论成功还是失败，都将提交状态设置为 false
         });
     }
   }
