@@ -5,7 +5,7 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_DATABASE: lafdru
+      MYSQL_DATABASE: lafdrue
       MYSQL_ROOT_PASSWORD: 123456
     volumes:
       - mysql_data:/var/lib/mysql
@@ -20,7 +20,7 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      - DATABASE_URL=mysql+mysqlconnector://root:123456@db:3306/lafdru
+      - DATABASE_URL=mysql+mysqlconnector://root:123456@db:3306/lafdrue
     depends_on:
       - db
 

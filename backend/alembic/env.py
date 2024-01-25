@@ -1,6 +1,7 @@
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config
+from sqlalchemy import create_engine,engine_from_config
 from sqlalchemy import pool
+from sqlalchemy_utils import database_exists, create_database
 from alembic import context
 import sys
 from pathlib import Path
@@ -12,8 +13,15 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 from backend.app.dependencies.database import Base
 
 
-# Alembic Config对象，提供.ini文件中的值的访问
+# 从配置中获取 URL
 config = context.config
+config.set_main_option('sqlalchemy.url', os.getenv('DATABASE_URL'))
+url = config.get_main_option("sqlalchemy.url")
+
+# 创建引擎并创建数据库（如果不存在）
+engine = create_engine(url)
+if not database_exists(engine.url):
+    create_database(engine.url)
 
 # 如果存在ini文件，则为Python日志配置
 if config.config_file_name is not None:
