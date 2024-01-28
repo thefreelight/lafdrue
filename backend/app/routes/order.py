@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException,Request
 from sqlalchemy.orm import Session
-from ..schemas.order import OrderCreateSchema
+from ..schemas.order import OrderSchema
 from ..services.order import create_order
 from ..dependencies.database import get_db
 from pydantic import ValidationError
@@ -8,8 +8,8 @@ from pydantic import ValidationError
 
 router = APIRouter()
 
-@router.post("/orders/", response_model=OrderCreateSchema)
-async def create_order_endpoint(order_create: OrderCreateSchema, db: Session = Depends(get_db)):
+@router.post("/creat_order/", response_model=OrderSchema)
+async def create_order_endpoint(order_create: OrderSchema, db: Session = Depends(get_db)):
     try:
         created_order = create_order(db=db, order_create=order_create)
         db.commit()

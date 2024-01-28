@@ -2,7 +2,7 @@ export const cart = {
   namespaced: true,
   state: () => ({
     items: [],
-    isCartDropdownVisible: false
+    isCartDropdownVisible: false,
   }),
   getters: {
     totalItems: (state) => state.items.reduce((total, item) => total + item.quantity, 0),

@@ -21,3 +21,8 @@ def update_payment_method(db: Session, payment_method_id: int, payment_method: P
         db.commit()
         db.refresh(db_payment_method)
     return db_payment_method
+
+
+def get_all_payment_methods_service(db: Session):
+    payment_methods = db.query(PaymentMethod).all()
+    return payment_methods

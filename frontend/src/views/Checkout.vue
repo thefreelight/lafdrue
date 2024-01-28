@@ -3,7 +3,7 @@
     <h2 class="text-2xl font-bold text-center mb-6">结算</h2>
     <div class="flex justify-center">
       <div class="w-full max-w-lg">
-        <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" @submit.prevent="submitOrder">
 
           <!-- 商品价格明细 -->
           <div class="mb-4">
@@ -29,113 +29,150 @@
             </label>
             <input
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email" type="email" placeholder="您的邮箱" v-model="userEmail" >
+                id="email" type="email" placeholder="您的邮箱" v-model="userEmail">
           </div>
 
 
-          <!-- 支付方式选择 -->
-          <div class="mb-4">
-            <span class="block text-gray-700 text-sm font-bold mb-2">支付方式</span>
-            <div class="flex flex-col">
-              <label class="inline-flex items-center mt-3">
-                <input type="radio" class="form-radio h-5 w-5 text-blue-600" name="paymentMethod" value="alipay"
-                       checked>
-                <span class="ml-2 text-gray-700">支付宝</span>
-              </label>
-              <label class="inline-flex items-center mt-3">
-                <input type="radio" class="form-radio h-5 w-5 text-green-500" name="paymentMethod" value="wechat">
-                <span class="ml-2 text-gray-700">微信支付</span>
-              </label>
-              <label class="inline-flex items-center mt-3">
-                <input type="radio" class="form-radio h-5 w-5 text-red-500" name="paymentMethod" value="stripe">
-                <span class="ml-2 text-gray-700">Stripe</span>
-              </label>
-              <label class="inline-flex items-center mt-3">
-                <input type="radio" class="form-radio h-5 w-5 text-yellow-500" name="paymentMethod" value="paypal">
-                <span class="ml-2 text-gray-700">PayPal</span>
-              </label>
+          <!-- 支付方式列表 -->
+          <div class="text-lg font-medium mb-4">请选择支付方式：</div>
+          <div class="grid grid-cols-1 gap-4">
+            <div v-for="method in paymentMethods"
+                 :key="method.id"
+                 class="p-4 border rounded-lg cursor-pointer hover:shadow-md"
+                 :class="{ 'ring-2 ring-indigo-600': method.id === selectedPaymentMethod?.id }"
+                 @click="selectPaymentMethod(method)">
+              <div class="flex items-center">
+                <!-- <img :src="method.logoUrl" alt="" class="h-8 w-8 object-contain mr-3"> 可选的logo -->
+                <div>{{ method.name }}</div>
+              </div>
             </div>
           </div>
 
           <!-- 提交按钮 -->
-          <div class="flex justify-end mt-4">
-            <button @click="submitOrder" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          <div class="mt-6">
+            <button v-if="!paymentUrlGenerated" type="submit"
+                    class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline transition-colors duration-300 ease-in-out">
               提交订单
+            </button>
+            <button v-else @click="goToPaymentPage"
+                    class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline transition-colors duration-300 ease-in-out">
+              继续支付
             </button>
           </div>
         </form>
       </div>
     </div>
+    <!-- 模态框组件用于显示警告或错误 -->
+    <Modal v-if="showModal" @close="showModal = false">
+      <p>{{ modalMessage }}</p>
+    </Modal>
   </div>
+
+
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters} from 'vuex';
-import axios from '../axios'; // 确保你已经安装并正确配置了axios
-
+import axios from '../axios';
+import {mapState, mapActions} from 'vuex';
+import Modal from '../components/Modal.vue';
 
 export default {
-    data() {
+  components: {Modal},
+  data() {
     return {
       userEmail: '',
-      isSubmitting: false, // 添加一个新的数据属性来跟踪提交状态
+      cartItems: [],
+      isSubmitting: false,
+      showModal: false,
+      modalMessage: '',
+      selectedPaymentMethod: null,
+      paymentMethods: [],
+      paymentUrlGenerated: false,
+      paymentUrl: null,
     };
   },
-  name: 'Checkout',
   computed: {
     ...mapState('cart', ['items']),
-    ...mapGetters('cart', ['isCartEmpty']), // 使用 getter 检查购物车是否为空
     totalPrice() {
-      return this.items.reduce((total, item) => total + item.quantity * item.price, 0);
+      return this.items.reduce((total, item) => total + item.quantity * item.price, 0).toFixed(2);
     },
-    selectedPaymentMethod() {
-      // 这里应该是绑定到radio buttons的数据属性
-      // 确保这个数据属性能够反映当前用户选择的支付方式
-      return this.$store.state.selectedPaymentMethod;
-    }
   },
   methods: {
-    ...mapActions('cart', ['clearCart']), // 映射 Vuex actions
+    ...mapActions('cart', ['clearCart', 'loadCart']),
+    fetchPaymentMethods() {
+      axios.get('/api/v1/payment_methods/').then(response => {
+        this.paymentMethods = response.data;
+      }).catch(error => {
+        this.errorHandler(error);
+      });
+    },
     submitOrder() {
-      if (this.isSubmitting) return; // 如果正在提交，则返回以防止重复提交
-      this.isSubmitting = true; // 设置提交状态为 true
-      // 假设你已经在Vuex状态中存储了用户的邮箱，或者它已经在表单中输入。
-      // 例如，让我们说它是一个计算属性，从Vuex状态获取用户的邮箱：
-      const userEmail = this.userEmail;
-      // 准备正确字段名为产品ID的商品项。
-      const itemsWithProductId = this.items.map(item => ({
-    product_id: item.id, // 将'id'重命名为'product_id'
-    quantity: item.quantity,
-    price: item.price
-  }));
+      if (this.isSubmitting) {
+        console.log("提交正在进行中，防止重复提交");
+        return;
+      }
+      this.isSubmitting = true;
+      console.log("开始提交订单");
 
-      const orderData = {
-        user_email: userEmail, // 包含用户的邮箱
-        items: itemsWithProductId, // 使用更新后的商品项数组
-        totalAmount: this.totalPrice,
-        paymentMethod: this.selectedPaymentMethod,
-        // 其他订单相关信息，比如用户信息等
+      let orderData = {
+        user_email: this.userEmail,
+        items: this.items.map(item => ({
+          product_id: item.id,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        payment_method_id: this.selectedPaymentMethod?.type,
       };
 
-      // 发送订单数据到后端
-      axios.post('/orders/', orderData)
-        .then(response => {
-          this.clearCart(); // 清空购物车
-          // 假设后端返回了支付页面所需的信息
-          const paymentInfo = response.data;
-          // 导航到支付页面，并传递支付信息
-          this.$router.push({ name: 'Payment', params: { paymentInfo } });
-        })
-        .catch(error => {
-          console.error('订单提交失败:', error);
-          // 这里应该处理错误，比如显示一个错误消息给用户
-        })
-        .finally(() => {
-          this.isSubmitting = false; // 请求完成后，无论成功还是失败，都将提交状态设置为 false
-        });
+      axios.post('/api/v1/creat_order/', orderData)
+          .then(response => {
+            console.log("订单创建成功:", response.data);
+            let orderInfo = response.data;
+            let paymentUrl = `/api/v1/payment_methods/create_payment_url?payment_method=${encodeURIComponent(this.selectedPaymentMethod?.type)}`;
+
+            return axios.post(paymentUrl, orderInfo);
+          })
+          .then(response => {
+            if (response.data && response.data.payment_url) {
+              console.log("支付URL创建成功:", response.data.payment_url);
+              this.paymentUrl = response.data.payment_url;
+              this.paymentUrlGenerated = true; // 更新标志
+            } else {
+              throw new Error("支付URL未正确返回");
+            }
+          })
+          .catch(error => {
+            console.error("提交订单或创建支付URL时发生错误:", error);
+            this.errorHandler(error);
+          })
+          .finally(() => {
+            this.isSubmitting = false;
+          });
+    },
+    goToPaymentPage() {
+      window.location.href = this.paymentUrl;
+    },
+    errorHandler(error) {
+      this.modalMessage = error.response?.data?.detail || '发生错误，请稍后再试。';
+      this.showModal = true;
+    },
+    //选择支付方式
+    selectPaymentMethod(method) {
+      if (this.selectedPaymentMethod?.id === method.id) {
+        this.selectedPaymentMethod = null; // Deselect if the same method is clicked again
+      } else {
+        this.selectedPaymentMethod = method; // Set the selected method
+      }
+    },
+  },
+  mounted() {
+    this.fetchPaymentMethods(); // 加载支付方式
+    if (!this.items.length) {
+      this.$store.dispatch('cart/loadCart'); // 从 Vuex 加载购物车内容
     }
-  }
+  },
+
+
 };
 </script>
-
 

@@ -6,6 +6,7 @@ class PaymentMethodBase(BaseModel):
     merchant_id: Optional[str]
     secret_key: Optional[str]
     payment_gateway: Optional[str]
+    name:Optional[str]
 
 class PaymentMethodCreate(PaymentMethodBase):
     pass
@@ -18,3 +19,5 @@ class PaymentMethodUpdate(BaseModel):
     merchant_id: Optional[str]
     secret_key: Optional[str]
     payment_gateway: Optional[str]
+    name:Optional[str]
+

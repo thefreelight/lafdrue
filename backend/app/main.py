@@ -39,9 +39,9 @@ app.add_middleware(
     allow_headers=["*"],  # 允许所有头
 )
 
-app.include_router(product.router, prefix="/api/v1/products", tags=["products"])
-app.include_router(category.router, prefix="/api/v1/categories", tags=["categories"])
-app.include_router(order.router, prefix="/api/v1/orders", tags=["orders"])
-app.include_router(payment_methods.router, prefix="/api/v1/payment-methods", tags=["payment-methods"])
+app.include_router(product.router, prefix="/api/v1", tags=["products"])
+app.include_router(category.router, prefix="/api/v1", tags=["categories"])
+app.include_router(order.router, prefix="/api/v1", tags=["orders"])
+app.include_router(payment_methods.router, prefix="/api/v1", tags=["payment-methods"])
 app.include_router(payment.router, prefix="/api/v1", tags=["payments"])
 

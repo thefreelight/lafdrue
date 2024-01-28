@@ -6,7 +6,8 @@ from ..dependencies.database import Base
 class PaymentMethod(Base):
     __tablename__ = 'payment_methods'
     id = Column(Integer, primary_key=True)
-    type = Column(String(50))  # 支付类型，如 'YiPayment', 'AliPayment', 'WeChatPayment'
+    name = Column(String(50)) #支付名称 支付宝，微信
+    type = Column(String(50))  # 支付类型，如 扫码付
     merchant_id = Column(String(255))  # 通用商户ID
     secret_key = Column(String(255))  # 通用密钥
     payment_gateway = Column(String(255))  # 通用支付网关
