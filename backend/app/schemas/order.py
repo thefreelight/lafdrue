@@ -14,17 +14,18 @@ class OrderCreateSchema(BaseModel):
     role: str
     payment_method: str
     client_ip: str
-    payment_status: str
-    shipping_status: str
     handling_fee: Optional[float] = None
     card_info: Optional[str] = None
     items: List[OrderItemSchema]
+    total_amount: float
+
 
 class OrderSchema(OrderCreateSchema):
     id: int
     order_number: str
-    total_amount: float
     order_time: datetime
+    payment_status: str
+    shipping_status: str
 
     class Config:
         from_attributes = True  # 替换原来的 orm_mode = True

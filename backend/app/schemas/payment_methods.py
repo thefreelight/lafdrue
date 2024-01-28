@@ -7,6 +7,8 @@ class PaymentMethodBase(BaseModel):
     secret_key: Optional[str]
     payment_gateway: Optional[str]
     name:Optional[str]
+    payment_method: str
+
 
 class PaymentMethodCreate(PaymentMethodBase):
     pass

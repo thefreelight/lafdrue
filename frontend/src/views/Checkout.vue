@@ -116,19 +116,24 @@ export default {
 
       let orderData = {
         user_email: this.userEmail,
+        role: "用户角色", // 需要根据实际情况设定
+        payment_method: this.selectedPaymentMethod?.type,  //实际获取的是支付方式里的类别，比如alipay
+        client_ip: "用户IP地址", // 需要获取用户IP地址
+        total_amount: this.totalPrice, // 计算的总金额
         items: this.items.map(item => ({
           product_id: item.id,
+          product_name: item.name, // 假设 item 中已有名称
+          shipping_method: "默认配送方式", // 需要根据实际情况设定
           quantity: item.quantity,
           price: item.price
         })),
-        payment_method_id: this.selectedPaymentMethod?.type,
       };
 
       axios.post('/api/v1/creat_order/', orderData)
           .then(response => {
             console.log("订单创建成功:", response.data);
             let orderInfo = response.data;
-            let paymentUrl = `/api/v1/payment_methods/create_payment_url?payment_method=${encodeURIComponent(this.selectedPaymentMethod?.type)}`;
+            let paymentUrl = `/api/v1/payment_methods/create_payment_url?payment_method=${encodeURIComponent(this.selectedPaymentMethod?.payment_method)}`;
 
             return axios.post(paymentUrl, orderInfo);
           })

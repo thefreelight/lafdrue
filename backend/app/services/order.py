@@ -1,15 +1,24 @@
 from sqlalchemy.orm import Session
-from ..models.order import Order, OrderItem
+from ..models.order import Order, OrderItem,PaymentStatus,ShippingStatus
 from ..schemas.order import OrderCreateSchema
-
 
 def create_order(db: Session, order_create: OrderCreateSchema):
     try:
-        # 计算总金额
-        total_amount = sum(item.quantity * item.price for item in order_create.items)
+        # 使用前端提供的总金额
+        total_amount = order_create.total_amount
 
-        # 创建订单实例
-        order = Order(user_email=order_create.user_email, total_amount=total_amount)
+        # 创建订单实例，初始化支付状态和发货状态
+        order = Order(
+            user_email=order_create.user_email,
+            role=order_create.role,
+            payment_method=order_create.payment_method,
+            client_ip=order_create.client_ip,
+            payment_status= PaymentStatus.UNPAID,
+            shipping_status= ShippingStatus.UNSENT,
+            total_amount=total_amount,
+            handling_fee=order_create.handling_fee,  # 如果存在
+            card_info=order_create.card_info  # 如果存在
+        )
         db.add(order)
         db.flush()  # 使用 flush 来获取 order 的 ID，但不提交事务
 
@@ -18,6 +27,8 @@ def create_order(db: Session, order_create: OrderCreateSchema):
             item = OrderItem(
                 order_id=order.id,
                 product_id=item_data.product_id,
+                product_name=item_data.product_name,  # 确保 OrderItem 有此字段
+                shipping_method=item_data.shipping_method,  # 确保 OrderItem 有此字段
                 quantity=item_data.quantity,
                 price=item_data.price
             )
@@ -27,9 +38,6 @@ def create_order(db: Session, order_create: OrderCreateSchema):
         db.commit()
         return order
     except Exception as e:
-        # 打印错误信息
         print(f"Error creating order: {e}")
-        # 回滚事务
         db.rollback()
-        # 这里可以抛出更具体的异常或返回错误信息
         raise e

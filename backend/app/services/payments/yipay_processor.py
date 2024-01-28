@@ -1,6 +1,8 @@
 import hashlib
 import requests
+import re
 from urllib.parse import urlencode
+from ...dependencies.config import NOTIFY_URL,RETURN_URL
 
 class YiPayProcessor:
     def __init__(self, merchant_id, secret_key, api_url):
@@ -37,12 +39,12 @@ class YiPayProcessor:
         base_params = {
             'pid': self.merchant_id,
             'type': order_info.get('payment_method'),
-            'out_trade_no': order_info.get('out_trade_no'),
-            'notify_url': order_info.get('notify_url'),
-            'return_url': order_info.get('return_url'),
-            'name': order_info.get('name'),
-            'money': order_info.get('money'),
-            'sitename': order_info.get('sitename')
+            'out_trade_no': order_info.get('order_number'),
+            'notify_url': NOTIFY_URL,
+            'return_url': RETURN_URL,
+            'name': order_info.get('items')[0].get('product_name'),  # 获取商品名称
+            'money': order_info.get('total_amount'),
+            'sitename': order_info.get('order_number')
         }
 
         # 生成签名
@@ -58,7 +60,21 @@ class YiPayProcessor:
 
         # 检查请求是否成功
         if response.status_code == 200:
-            return response.text
+            try:
+                # 使用正则表达式提取出支付链接
+                match = re.search(r"window.location.href='(.*?)';", response.text)
+                if match:
+                    # 获取匹配到的第一个分组，即相对URL
+                    relative_url = match.group(1)
+                    # 拼接成完整的URL
+                    payment_url = self.api_url + relative_url
+                    return payment_url
+                else:
+                    return None
+            except Exception as e:
+                # 处理任何正则表达式解析错误
+                print(f"Error extracting payment URL: {e}")
+                return None
         else:
             # 处理错误情况
             return None

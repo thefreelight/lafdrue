@@ -16,7 +16,7 @@ class PaymentFactory:
     @classmethod
     def get_processor(cls, payment_method):
         db = next(get_db())
-        config = db.query(PaymentMethod).filter_by(type=payment_method).first()
+        config = db.query(PaymentMethod).filter_by(payment_method=payment_method).first()
         if not config:
             raise ValueError(f"No payment config found for {payment_method}")
 
