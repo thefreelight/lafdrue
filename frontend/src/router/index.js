@@ -7,6 +7,7 @@ import Cart from '../components/Cart.vue';
 import Checkout from '../views/Checkout.vue';
 import ProductDetails from "../components/ProductDetails.vue";
 import PaymentPage from '../views/PaymentPage.vue';
+import PaymentSuccess from "../views/PaymentSuccess.vue";
 
 
 const routes = [
@@ -17,8 +18,8 @@ const routes = [
   { path: '/cart', component: Cart },
   { path: '/checkout', component: Checkout },
   { path: '/payment', component: PaymentPage },
-  { path: '/products/:id', name: 'ProductDetails', component: ProductDetails }
-  // 其他路由...
+  { path: '/products/:id', name: 'ProductDetails', component: ProductDetails },
+  { path: '/payment-success', name: 'PaymentSuccess', component: PaymentSuccess }  // 其他路由...
 ];
 
 const router = createRouter({

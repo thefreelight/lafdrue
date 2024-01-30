@@ -9,7 +9,10 @@ from .routes import product
 from .routes import category
 from .routes import order
 from .routes import payment_methods
-from .routes import payment
+from .routes import payment_notifications
+from .routes import payment_callback
+from .routes import user
+from .routes import admin
 
 app = FastAPI()
 
@@ -43,5 +46,9 @@ app.include_router(product.router, prefix="/api/v1", tags=["products"])
 app.include_router(category.router, prefix="/api/v1", tags=["categories"])
 app.include_router(order.router, prefix="/api/v1", tags=["orders"])
 app.include_router(payment_methods.router, prefix="/api/v1", tags=["payment-methods"])
-app.include_router(payment.router, prefix="/api/v1", tags=["payments"])
+app.include_router(payment_notifications.router, prefix="/api/v1", tags=["payment_notifications"])
+app.include_router(payment_callback.router, prefix="/api/v1", tags=["payment_callback"])
+app.include_router(user.router, prefix="/api/v1", tags=["user"])
+app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
+
 

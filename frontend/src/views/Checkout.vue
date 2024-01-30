@@ -24,12 +24,16 @@
 
           <!-- 邮箱输入 -->
           <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-              邮箱
-            </label>
+            <label for="email" class="block text-gray-700 text-sm font-bold mb-2">邮箱</label>
             <input
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email" type="email" placeholder="您的邮箱" v-model="userEmail">
+                type="email"
+                id="email"
+                v-model="userEmail"
+                @blur="validateEmail"
+                :class="{'border-red-500': !isEmailValid, 'border-gray-300': isEmailValid}"
+                class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
+            <p v-if="!isEmailValid" class="text-red-500 text-xs italic mt-2">{{ emailValidationMessage }}</p>
           </div>
 
 
@@ -50,13 +54,9 @@
 
           <!-- 提交按钮 -->
           <div class="mt-6">
-            <button v-if="!paymentUrlGenerated" type="submit"
-                    class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline transition-colors duration-300 ease-in-out">
-              提交订单
-            </button>
-            <button v-else @click="goToPaymentPage"
+            <button type="submit"
                     class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline transition-colors duration-300 ease-in-out">
-              继续支付
+              {{ isSubmitting ? '正在处理...' : '立即支付' }}
             </button>
           </div>
         </form>
@@ -81,6 +81,8 @@ export default {
   data() {
     return {
       userEmail: '',
+      isEmailValid: true,
+      emailValidationMessage: '',
       cartItems: [],
       isSubmitting: false,
       showModal: false,
@@ -99,6 +101,16 @@ export default {
   },
   methods: {
     ...mapActions('cart', ['clearCart', 'loadCart']),
+    validateEmail() {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      this.isEmailValid = re.test(this.userEmail);
+
+      if (!this.isEmailValid) {
+        this.emailValidationMessage = "请输入有效的邮箱地址。";
+      } else {
+        this.emailValidationMessage = "";
+      }
+    },
     fetchPaymentMethods() {
       axios.get('/api/v1/payment_methods/').then(response => {
         this.paymentMethods = response.data;
@@ -107,12 +119,19 @@ export default {
       });
     },
     submitOrder() {
+      // 首先验证邮箱
+    this.validateEmail();
+
+    // 如果邮箱验证不通过，直接返回，不执行提交操作
+    if (!this.isEmailValid) {
+      // 这里可以用一个更友好的提示方式代替alert，比如一个提示组件或模态框
+      this.emailValidationMessage = "请输入有效的邮箱地址。" ;
+      return;
+    }
       if (this.isSubmitting) {
-        console.log("提交正在进行中，防止重复提交");
         return;
       }
       this.isSubmitting = true;
-      console.log("开始提交订单");
 
       let orderData = {
         user_email: this.userEmail,
@@ -131,7 +150,6 @@ export default {
 
       axios.post('/api/v1/creat_order/', orderData)
           .then(response => {
-            console.log("订单创建成功:", response.data);
             let orderInfo = response.data;
             let paymentUrl = `/api/v1/payment_methods/create_payment_url?payment_method=${encodeURIComponent(this.selectedPaymentMethod?.payment_method)}`;
 
@@ -139,9 +157,8 @@ export default {
           })
           .then(response => {
             if (response.data && response.data.payment_url) {
-              console.log("支付URL创建成功:", response.data.payment_url);
               this.paymentUrl = response.data.payment_url;
-              this.paymentUrlGenerated = true; // 更新标志
+              window.location.href = this.paymentUrl;
             } else {
               throw new Error("支付URL未正确返回");
             }
@@ -153,9 +170,6 @@ export default {
           .finally(() => {
             this.isSubmitting = false;
           });
-    },
-    goToPaymentPage() {
-      window.location.href = this.paymentUrl;
     },
     errorHandler(error) {
       this.modalMessage = error.response?.data?.detail || '发生错误，请稍后再试。';
