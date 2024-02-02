@@ -13,6 +13,7 @@ from .routes import payment_notifications
 from .routes import payment_callback
 from .routes import user
 from .routes import admin
+from .routes import auth
 
 app = FastAPI()
 
@@ -50,5 +51,6 @@ app.include_router(payment_notifications.router, prefix="/api/v1", tags=["paymen
 app.include_router(payment_callback.router, prefix="/api/v1", tags=["payment_callback"])
 app.include_router(user.router, prefix="/api/v1", tags=["user"])
 app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
+app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
 
 

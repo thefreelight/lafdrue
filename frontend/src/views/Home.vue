@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="welcome-section text-center p-10">
-      <h1 class="text-4xl font-bold">欢迎来到独角数卡</h1>
+      <h1 class="text-4xl font-bold">欢迎来到Lafdrue</h1>
       <p class="text-xl mt-4">高效、稳定、快速的自动售货解决方案</p>
     </div>
     <div>

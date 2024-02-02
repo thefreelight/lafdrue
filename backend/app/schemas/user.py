@@ -27,11 +27,11 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    membership_level: MembershipLevel
+    membership_level: Optional[MembershipLevel] = None
     is_agent: bool
     balance: float
     commission: float
-    referral_code: str
+    referral_code: Optional[str] = None
     is_active: bool
 
     class Config:

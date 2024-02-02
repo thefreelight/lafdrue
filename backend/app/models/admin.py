@@ -2,6 +2,9 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from ..dependencies.database import Base
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class AdminRole(Base):
     __tablename__ = 'admin_roles'
@@ -22,3 +25,4 @@ class Admin(Base):
     email = Column(String(100), unique=True, index=True)
     hashed_password = Column(String(100))
     is_active = Column(Boolean, default=True)
+

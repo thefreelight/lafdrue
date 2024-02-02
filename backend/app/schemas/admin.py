@@ -1,5 +1,7 @@
 # schemas/admin.py
 from pydantic import BaseModel
+from typing import Optional
+
 
 class AdminRoleBase(BaseModel):
     name: str
@@ -7,6 +9,10 @@ class AdminRoleBase(BaseModel):
 
 class AdminRoleCreate(AdminRoleBase):
     pass
+
+class AdminRoleUpdate(BaseModel):
+    name: Optional[str] = None
+    permissions: Optional[str] = None
 
 class AdminRole(AdminRoleBase):
     id: int
@@ -26,7 +32,7 @@ class AdminCreate(AdminBase):
 class Admin(AdminBase):
     id: int
     is_active: bool
-    role: AdminRole
+    role: Optional[AdminRole] = None  # Assuming AdminRole is optional in Admin
 
     class Config:
         from_attributes = True  # 替换原来的 orm_mode = True
