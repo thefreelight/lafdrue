@@ -99,7 +99,7 @@ export default {
         errorMessage.value = '';
 
         // 使用Vue Router进行页面跳转
-    router.push('/admin/home');
+    router.push('/');
       } catch (error) {
         if (error.response) {
           // 从后端响应中获取错误信息，并显示
@@ -118,7 +118,7 @@ export default {
 
     onMounted(async () => {
       if (localStorage.getItem('access_token')) {
-         router.push('/admin/home');
+         router.push('/');
         }
         await fetchQuote();
         await fetchBackgroundImage();

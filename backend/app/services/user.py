@@ -1,7 +1,7 @@
 # crud/user.py
 from sqlalchemy.orm import Session
 from ..models.user import User, MembershipLevel
-from ..schemas.user import UserCreate, MembershipLevelCreate
+from ..schemas.user import UserCreate, MembershipLevelCreate,UserUpdate
 from passlib.context import CryptContext
 
 # 创建密码上下文
@@ -23,6 +23,24 @@ def create_user(db: Session, user: UserCreate):
     db.refresh(db_user)
     return db_user
 
+def update_user(db: Session, user_id: int, user: UserUpdate):
+    db_user = get_user(db, user_id=user_id)
+    if not db_user:
+        return None
+    user_data = user.dict(exclude_unset=True)
+    for key, value in user_data.items():
+        setattr(db_user, key, value)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def delete_user(db: Session, user_id: int):
+    user = db.query(User).filter(User.id == user_id).first()
+    if user:
+        db.delete(user)
+        db.commit()
+
+
 def get_membership_level(db: Session, level_id: int):
     return db.query(MembershipLevel).filter(MembershipLevel.id == level_id).first()
 
@@ -40,3 +58,12 @@ def create_membership_level(db: Session, membership_level: MembershipLevelCreate
 
 def get_user_by_username(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
+
+def recharge_user(db: Session, user_id: int, balance: float, commission: float):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return None
+    user.balance += balance
+    user.commission += commission
+    db.commit()
+    return user

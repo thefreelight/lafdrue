@@ -25,6 +25,19 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
+class UserUpdate(BaseModel):
+    email: Optional[str] = None
+    username: Optional[str] = None
+    referral_code: Optional[str] = None
+    membership_level: Optional[MembershipLevel] = None
+    is_agent: Optional[bool] = None
+    is_active: Optional[bool] = None
+
+class Recharge(BaseModel):
+    user_id: int
+    balance: float
+    commission: float
+
 class User(UserBase):
     id: int
     membership_level: Optional[MembershipLevel] = None

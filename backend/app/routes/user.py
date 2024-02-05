@@ -2,8 +2,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..dependencies.database import get_db
-from ..schemas.user import UserCreate, User, MembershipLevelCreate, MembershipLevel
-from ..services.user import create_user, get_user, get_users, create_membership_level, get_membership_levels,get_user_by_username
+from ..schemas.user import UserCreate, User, MembershipLevelCreate, MembershipLevel,UserUpdate,Recharge
+from ..services.user import create_user, get_user, get_users, create_membership_level, get_membership_levels,get_user_by_username,update_user,delete_user,recharge_user
 
 router = APIRouter()
 
@@ -27,6 +27,29 @@ def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     users = get_users(db, skip=skip, limit=limit)
     return users
 
+@router.put("/users/{user_id}", response_model=User)
+def update_user_endpoint(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
+    db_user = get_user(db, user_id=user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return update_user(db=db, user_id=user_id, user=user)
+
+@router.delete("/users/{user_id}", response_model=dict)
+def delete_user_endpoint(user_id: int, db: Session = Depends(get_db)):
+    db_user = get_user(db, user_id=user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    delete_user(db, user_id=user_id)
+    return {"detail": "User deleted successfully"}
+
+@router.post("/recharge/", response_model=User)
+def recharge_user_endpoint(recharge: Recharge, db: Session = Depends(get_db)):
+    try:
+        user = recharge_user(db=db, user_id=recharge.user_id, balance=recharge.balance, commission=recharge.commission)
+        return user
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @router.post("/membership_levels/", response_model=MembershipLevel)
 def create_membership_level_endpoint(membership_level: MembershipLevelCreate, db: Session = Depends(get_db)):
     return create_membership_level(db=db, membership_level=membership_level)
@@ -43,4 +66,3 @@ def read_membership_levels(skip: int = 0, limit: int = 10, db: Session = Depends
     levels = get_membership_levels(db, skip=skip, limit=limit)
     return levels
 
-# ... 更多用户相关的API路由
