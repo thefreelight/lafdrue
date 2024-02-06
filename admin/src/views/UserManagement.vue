@@ -107,7 +107,7 @@
             <button @click="editUser(user)" class="text-indigo-600 hover:text-indigo-900">
               编辑
             </button>
-            <button @click="deleteUser(user.id)" class="text-red-600 hover:text-red-900 ml-4">
+            <button @click="openDeleteConfirmation(user.id)" class="text-red-600 hover:text-red-900 ml-4">
               删除
             </button>
 
@@ -118,115 +118,102 @@
     </div>
   </div>
   <UserEditModal v-if="showEditModal" :selectedUser="selectedUser" @update:showEditModal="showEditModal = $event"/>
-  <UserRechargeModal
-  v-if="showRechargeModal"
-  :selectedUserId="selectedUserId"
-  :showRechargeModal="showRechargeModal"
-  @update:showRechargeModal="showRechargeModal = $event"
-/>
+  <UserRechargeModal v-if="showRechargeModal" :selectedUserId="selectedUserId" :showRechargeModal="showRechargeModal"
+                     @update:showRechargeModal="showRechargeModal = $event"
+  />
+  <DeleteConfirmationModal
+      v-if="showDeleteConfirmation"
+      :showModal="showDeleteConfirmation"
+      title="删除用户"
+      message="您确定要删除这个用户吗？此操作不能撤销。"
+      :action="deleteUser"
+      @update:showModal="showDeleteConfirmation = $event"
+  />
 
 
 </template>
 
-<script>
+
+<script setup>
 import axios from '../axios';
-import {ref, computed} from 'vue';
+import { ref, computed } from 'vue';
 import UserEditModal from '../components/UserEditModal.vue';
 import UserRechargeModal from '../components/UserRechargeModal.vue';
+import DeleteConfirmationModal from '../components/DeleteConfirmationModal.vue';
 
-export default {
-  name: 'UserManagement',
-  components: {
-    UserEditModal,
-    UserRechargeModal
-  },
-  setup() {
-    const users = ref([]);
-    const showEditModal = ref(false);
-    const showRechargeModal = ref(false);
-    const selectedUser = ref(null);
-    const selectedUserId = ref(null);
+const users = ref([]);
+const showEditModal = ref(false);
+const showRechargeModal = ref(false);
+const showDeleteConfirmation = ref(false);
+const selectedUser = ref({});
+const selectedUserId = ref(null);
+const selectedId = ref(null);
 
-    // 打开编辑模态框
-    const editUser = (user) => {
+const filters = ref({
+  username: '',
+  email: '',
+  isAgent: '',
+  isActive: ''
+});
 
-      selectedUser.value = user;
-      showEditModal.value = true;
-
-    };
-
-    // 打开充值模态框
-    const rechargeUser = (userId) => {
-      selectedUserId.value = userId;
-      showRechargeModal.value = true;
-    };
-
-    // 添加筛选条件
-    const filters = ref({
-      username: '',
-      email: '',
-      isAgent: '',
-      isActive: ''
-    });
-
-    // 获取用户数据
-    const fetchUsers = async () => {
-      try {
-        // 假设API支持查询参数，我们可以将filters传递给API
-        const response = await axios.get('/api/v1/users/', {params: filters.value});
-        users.value = response.data;
-      } catch (error) {
-        console.error('There was an error fetching the users:', error);
-      }
-    };
-
-    // 根据筛选条件计算过滤后的用户列表
-    const filteredUsers = computed(() => {
-      return users.value.filter(user => {
-        return (
-            (filters.value.username ? user.username.toLowerCase().includes(filters.value.username.toLowerCase()) : true) &&
-            (filters.value.email ? user.email.toLowerCase().includes(filters.value.email.toLowerCase()) : true) &&
-            (filters.value.isAgent !== '' ? user.is_agent.toString() === filters.value.isAgent : true) &&
-            (filters.value.isActive !== '' ? user.is_active.toString() === filters.value.isActive : true)
-        );
-      });
-    });
-
-
-    // 监听筛选条件变化并重新获取用户列表
-    const applyFilters = () => {
-      fetchUsers();
-    };
-
-    // 删除用户
-    const deleteUser = async (userId) => {
-      try {
-        await axios.delete(`/api/v1/users/${userId}`);
-        fetchUsers(); // 删除后重新获取用户列表
-      } catch (error) {
-        console.error('There was an error deleting the user:', error);
-      }
-    };
-
-    // 初始加载用户数据
-    fetchUsers();
-
-    return {
-      filters,
-      filteredUsers,
-      applyFilters,
-      editUser,
-      rechargeUser,
-      deleteUser,
-      showEditModal,
-      showRechargeModal,
-      selectedUser,
-      selectedUserId,
-    };
+// 获取用户数据
+const fetchUsers = async () => {
+  try {
+    const response = await axios.get('/api/v1/users/', { params: filters.value });
+    users.value = response.data;
+  } catch (error) {
+    console.error('There was an error fetching the users:', error);
   }
 };
+
+// 根据筛选条件计算过滤后的用户列表
+const filteredUsers = computed(() => users.value.filter(user => {
+  return (
+    (!filters.value.username || user.username.toLowerCase().includes(filters.value.username.toLowerCase())) &&
+    (!filters.value.email || user.email.toLowerCase().includes(filters.value.email.toLowerCase())) &&
+    (filters.value.isAgent === '' || user.is_agent.toString() === filters.value.isAgent) &&
+    (filters.value.isActive === '' || user.is_active.toString() === filters.value.isActive)
+  );
+}));
+
+// 监听筛选条件变化并重新获取用户列表
+const applyFilters = () => fetchUsers();
+
+// 删除用户
+const deleteUser = async () => {
+  try {
+    const response = await axios.delete(`/api/v1/users/${selectedId.value}`);
+    console.log(`用户删除成功: ${response.data.detail}`);
+    showDeleteConfirmation.value = false;
+    fetchUsers();
+  } catch (error) {
+    console.error(`删除用户失败: ${error}`);
+  }
+};
+
+// 打开编辑模态框
+const editUser = (user) => {
+  selectedUser.value = user;
+  showEditModal.value = true;
+};
+
+// 打开充值模态框
+const rechargeUser = (userId) => {
+  selectedUserId.value = userId;
+  showRechargeModal.value = true;
+};
+
+// 打开删除确认模态框
+const openDeleteConfirmation = (id) => {
+  selectedId.value = id;
+  showDeleteConfirmation.value = true;
+};
+
+fetchUsers(); // 初始加载用户数据
+
 </script>
 
 <style scoped>
 /* 可以在此处添加特定的CSS样式 */
 </style>
+
