@@ -14,7 +14,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: bash -c "./start-backend.sh"
+    command: bash -c "chmod +x ./start-backend.sh && ./start-backend.sh"
     ports:
       - "8000:8000"
     volumes:
