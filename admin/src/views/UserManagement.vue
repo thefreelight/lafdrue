@@ -130,16 +130,26 @@
       @update:showModal="showDeleteConfirmation = $event"
   />
 
+  <!-- 分页组件 -->
+  <Pagination
+  :current-page="currentPage"
+  :total-pages="totalPages"
+  @page-changed="handlePageChange"
+/>
+
+
+
 
 </template>
 
 
 <script setup>
 import axios from '../axios';
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onMounted} from 'vue';
 import UserEditModal from '../components/UserEditModal.vue';
 import UserRechargeModal from '../components/UserRechargeModal.vue';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal.vue';
+import Pagination from '../components/Pagination.vue';
 
 const users = ref([]);
 const showEditModal = ref(false);
@@ -148,6 +158,9 @@ const showDeleteConfirmation = ref(false);
 const selectedUser = ref({});
 const selectedUserId = ref(null);
 const selectedId = ref(null);
+const currentPage = ref(1);
+const totalPages = ref(0);
+const pageSize = ref(10);  // 假设你的每页大小是10
 
 const filters = ref({
   username: '',
@@ -156,15 +169,45 @@ const filters = ref({
   isActive: ''
 });
 
-// 获取用户数据
+const params = computed(() => ({
+  ...filters.value,
+  page: currentPage.value,
+  size: pageSize.value
+}));
+
+// 更新 fetchUsers 函数以存储分页信息
 const fetchUsers = async () => {
   try {
-    const response = await axios.get('/api/v1/users/', { params: filters.value });
-    users.value = response.data;
+    const response = await axios.get('/api/v1/users/', {
+      params: {
+        ...filters.value,
+        page: currentPage.value,
+        size: pageSize.value
+      }
+    });
+    // Ensure this data is in the expected format and that properties exist.
+    users.value = response.data.items;
+    totalPages.value = response.data.pages;
+    // currentPage.value = response.data.page; // This line might not be necessary if currentPage is controlled by handlePageChange
   } catch (error) {
     console.error('There was an error fetching the users:', error);
   }
 };
+
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage;
+  fetchUsers();
+};
+
+
+// 监听筛选条件变化并重新获取用户列表
+watch(filters, fetchUsers, { deep: true });
+
+watch(currentPage, fetchUsers); // This watcher will call fetchUsers whenever currentPage changes
+
+
+
+
 
 // 根据筛选条件计算过滤后的用户列表
 const filteredUsers = computed(() => users.value.filter(user => {
@@ -209,7 +252,8 @@ const openDeleteConfirmation = (id) => {
   showDeleteConfirmation.value = true;
 };
 
-fetchUsers(); // 初始加载用户数据
+// 页面加载时获取用户数据
+onMounted(fetchUsers);
 
 </script>
 

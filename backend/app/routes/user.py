@@ -1,7 +1,13 @@
 # routes/user.py
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 from ..dependencies.database import get_db
+# 假设这是你的 SQLAlchemy 模型
+from ..models.user import User as DBUser
+# 假设这是你的 Pydantic 模型
+from ..schemas.user import User as SchemaUser
 from ..schemas.user import UserCreate, User, MembershipLevelCreate, MembershipLevel,UserUpdate,Recharge
 from ..services.user import create_user, get_user, get_users, create_membership_level, get_membership_levels,get_user_by_username,update_user,delete_user,recharge_user
 
@@ -15,6 +21,7 @@ def create_user_endpoint(user: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Username already registered")
     return create_user(db=db, user=user)
 
+
 @router.get("/users/{user_id}", response_model=User)
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = get_user(db, user_id=user_id)
@@ -22,10 +29,12 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
-@router.get("/users/", response_model=list[User])
-def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    users = get_users(db, skip=skip, limit=limit)
-    return users
+@router.get("/users/", response_model=Page[SchemaUser])
+async def read_users(db: Session = Depends(get_db)):
+    # 直接使用 SQLAlchemy 的 Query 对象
+    query = db.query(DBUser)  # 假设 DBUser 是你的 SQLAlchemy 模型
+    return paginate(query)
+
 
 @router.put("/users/{user_id}", response_model=User)
 def update_user_endpoint(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):

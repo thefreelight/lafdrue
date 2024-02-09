@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from .dependencies.database import engine, Base
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi_pagination import add_pagination
+
 
 from .routes import product
 from .routes import category
@@ -54,3 +56,5 @@ app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
 app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
 
 
+# 在创建完所有路由后添加分页
+add_pagination(app)

@@ -33,6 +33,7 @@ class UserUpdate(BaseModel):
     is_agent: Optional[bool] = None
     is_active: Optional[bool] = None
 
+
 class Recharge(BaseModel):
     user_id: int
     balance: float
@@ -46,6 +47,7 @@ class User(UserBase):
     commission: float
     referral_code: Optional[str] = None
     is_active: bool
+
 
     class Config:
         from_attributes = True  # 替换原来的 orm_mode = True
