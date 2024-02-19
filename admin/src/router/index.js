@@ -4,6 +4,7 @@ import Login from "../views/Login.vue";
 import Home from '../views/Home.vue';
 import Dashboard from '../views/Dashboard.vue';
 import UserManagement from "../views/UserManagement.vue";
+import MembershipLevelManagement from "../views/MembershipLevelManagement.vue";
 
 
 const routes = [
@@ -12,6 +13,7 @@ const routes = [
         children: [
             {path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: {requiresAuth: true}},
             {path: '/users', name: 'Users', component: UserManagement, meta: {requiresAuth: true}},
+            {path: '/users/levels', name: 'levels', component: MembershipLevelManagement, meta: {requiresAuth: true}},
             // 如果需要让仪表盘成为默认页面，可以添加重定向
             { path: '', redirect: { name: 'Dashboard' } },
         ]
