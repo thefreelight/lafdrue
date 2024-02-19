@@ -255,7 +255,7 @@ watch(membershipLevels, (newLevels) => {
 // 在组件加载时获取会员等级
 const fetchMembershipLevels = async () => {
   try {
-    const response = await axios.get('/api/v1/membership-levels/');
+    const response = await axios.get('/api/v1/membership_levels/');
     if (response.data && Array.isArray(response.data)) {
       const membershipLevelField = searchFields.value.find(field => field.model === 'membershipLevel');
       membershipLevelField.options.push(...response.data.map(level => ({
