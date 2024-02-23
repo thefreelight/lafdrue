@@ -20,7 +20,12 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade():
-    op.add_column('payment_methods', sa.Column('payment_method', sa.String(length=50), nullable=True))
+    op.add_column('categories', sa.Column('is_active', sa.Boolean(), nullable=False, server_default=sa.true()))
+    op.add_column('categories', sa.Column('display', sa.Boolean(), nullable=False, server_default=sa.true()))
+    op.add_column('categories', sa.Column('order', sa.Integer(), nullable=False, server_default='0'))
+
 
 def downgrade():
-    op.drop_column('payment_methods', 'payment_method')
+    op.drop_column('categories', 'is_active')
+    op.drop_column('categories', 'display')
+    op.drop_column('categories', 'order')

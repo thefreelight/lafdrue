@@ -38,51 +38,58 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faSignOutAlt, faTachometerAlt, faUsers, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { faSignOutAlt, faTachometerAlt, faUsers, faChevronDown, faHandshake } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { useRouter } from 'vue-router'
 
-library.add(faSignOutAlt, faTachometerAlt, faUsers, faChevronDown)
+library.add(faSignOutAlt, faTachometerAlt, faUsers, faChevronDown, faHandshake)
 
-export default {
-  name: 'AppLayout',
-  components: {
-    FontAwesomeIcon
+const router = useRouter()
+const route = useRoute()
+
+const navigation = ref([
+  { path: '/dashboard', text: '仪表盘', iconName: 'tachometer-alt', iconPrefix: 'fas', isOpen: false },
+  {
+    text: '用户管理',
+    iconName: 'users',
+    iconPrefix: 'fas',
+    isOpen: false,
+    children: [
+      { path: '/users/', text: '管理用户' },
+      { path: '/users/levels', text: '会员等级' }
+      // 更多子菜单项...
+    ]
   },
-  data() {
-    return {
-      navigation: [
-        { path: '/dashboard', text: '仪表盘', iconName: 'tachometer-alt', iconPrefix: 'fas', isOpen: false },
-        {
-          path: '/users',
-          text: '用户管理',
-          iconName: 'users',
-          iconPrefix: 'fas',
-          isOpen: false,
-          children: [
-            { path: '/users/', text: '管理用户' },
-            { path: '/users/levels', text: '会员等级' }
-            // 更多子菜单项...
-          ]
-        },
-        // 其他导航项...
-      ]
-    }
+    {
+    text: '交易管理',
+    iconName: 'handshake', // 选择一个适合的FontAwesome图标
+    iconPrefix: 'fas',
+    isOpen: false,
+    children: [
+      { path: '/category/', text: '商品分类' },
+      { path: '/product/', text: '商品管理' },
+      { path: '/card/', text: '卡密管理' },
+      { path: '/order/', text: '订单管理' },
+      // ... 可能的其他交易相关管理 ...
+    ]
   },
-  methods: {
-    toggle(item) {
-      item.isOpen = !item.isOpen
-    },
-    navigateTo(path) {
-      this.$router.push(path);
-    },
-    logout() {
-      localStorage.removeItem('access_token')
-      window.location.href = '/login';
-    }
-  }
+  // 其他导航项...
+])
+
+function toggle(item) {
+  item.isOpen = !item.isOpen
+}
+
+function navigateTo(path) {
+  router.push(path)
+}
+
+function logout() {
+  localStorage.removeItem('access_token')
+  router.push('/login')
 }
 </script>
 
