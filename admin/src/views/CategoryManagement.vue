@@ -83,6 +83,7 @@ const totalPages = ref(0);
 const pageSize = ref(10); // 假设您的API支持自定义每页显示的数量
 const showDeleteConfirmation = ref(false); // 控制删除确认模态框的显示
 const selectedCategoryId = ref(null); // 选中的分类ID
+
 // 定义筛选条件的响应式对象
 const filters = reactive({
   name: '', // 分类名称的筛选条件

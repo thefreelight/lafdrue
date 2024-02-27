@@ -16,6 +16,11 @@ class ProductBase(BaseModel):
 class ProductCreate(ProductBase):
     category_id: int
 
+class ProductQuery(BaseModel):
+    category_id: Optional[int] = None
+    name: Optional[str] = None
+    status: Optional[str] = None
+
 class Product(ProductBase):
     id: int
     sku: Optional[str] = None

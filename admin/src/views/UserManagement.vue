@@ -337,11 +337,9 @@ watch(currentPage, fetchUsers); // This watcher will call fetchUsers whenever cu
 const deleteUser = async () => {
   try {
     const response = await axios.delete(`/api/v1/users/${selectedId.value}`);
-    console.log(`用户删除成功: ${response.data.detail}`);
     showDeleteConfirmation.value = false;
     fetchUsers();
   } catch (error) {
-    console.error(`删除用户失败: ${error}`);
   }
 };
 

@@ -6,7 +6,7 @@ import Dashboard from '../views/Dashboard.vue';
 import UserManagement from "../views/UserManagement.vue";
 import MembershipLevelManagement from "../views/MembershipLevelManagement.vue";
 import CategoryManagement from "../views/CategoryManagement.vue";
-
+import ProductManagement from "../views/ProductManagement.vue";
 
 const routes = [
     {
@@ -16,6 +16,7 @@ const routes = [
             {path: '/users', name: 'Users', component: UserManagement, meta: {requiresAuth: true}},
             {path: '/users/levels', name: 'levels', component: MembershipLevelManagement, meta: {requiresAuth: true}},
             { path: '/category/', name: 'CategoryManagement', component: CategoryManagement, meta: { requiresAuth: true } }, // 新增的分类管理路由
+            { path: '/product/', name: 'ProductManagement', component: ProductManagement, meta: { requiresAuth: true } },
 
             // 如果需要让仪表盘成为默认页面，可以添加重定向
             { path: '', redirect: { name: 'Dashboard' } },
