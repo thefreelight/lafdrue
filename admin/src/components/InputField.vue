@@ -11,6 +11,16 @@
       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 sm:text-sm"
     />
 
+    <!-- 文本区域输入 -->
+    <textarea
+      v-else-if="input.type === 'textarea'"
+      :id="input.model"
+      :placeholder="input.placeholder"
+      :value="modelValue"
+      @input="updateValue($event.target.value)"
+      class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 sm:text-sm"
+    ></textarea>
+
     <!-- 下拉选择框 -->
     <select
       v-else-if="input.type === 'select'"

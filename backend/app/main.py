@@ -1,11 +1,9 @@
-# main.py
-from fastapi import FastAPI,Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from .dependencies.database import engine, Base
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi_pagination import add_pagination
-
 
 from .routes import product
 from .routes import category
@@ -16,17 +14,15 @@ from .routes import payment_callback
 from .routes import user
 from .routes import admin
 from .routes import auth
+from .routes import article_category  # 新增
+from .routes import article  # 新增
 
 app = FastAPI()
-
 
 # 在启动应用前创建数据库表
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
-
-
-
 
 # 在这里定义异常处理器
 @app.exception_handler(RequestValidationError)
@@ -54,7 +50,8 @@ app.include_router(payment_callback.router, prefix="/api/v1", tags=["payment_cal
 app.include_router(user.router, prefix="/api/v1", tags=["user"])
 app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
 app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
-
+app.include_router(article_category.router, prefix="/api/v1", tags=["article-categories"])  # 新增
+app.include_router(article.router, prefix="/api/v1", tags=["articles"])  # 新增
 
 # 在创建完所有路由后添加分页
 add_pagination(app)

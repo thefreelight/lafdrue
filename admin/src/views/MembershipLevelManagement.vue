@@ -109,11 +109,9 @@ const handleSaveMembershipLevel = async (levelData) => {
     if (showAddModal.value) {
       // 如果 showAddModal 为 true，调用添加会员等级的接口
       response = await axios.post('/api/v1/membership_levels/', levelData);
-      console.log("Membership level added:", response.data);
     } else if (selectedLevel.value && selectedLevel.value.id) {
       // 如果 selectedLevel 存在且包含 id，调用更新会员等级的接口
       response = await axios.put(`/api/v1/membership_levels/${selectedLevel.value.id}`, levelData);
-      console.log("Membership level updated:", response.data);
     }
 
     // 保存成功后关闭模态框并刷新列表

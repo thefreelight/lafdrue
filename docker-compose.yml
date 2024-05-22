@@ -14,11 +14,10 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: bash -c "chmod +x ./start-backend.sh && ./start-backend.sh"
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ./backend:/backend
     environment:
       - DATABASE_URL=mysql+mysqlconnector://root:123456@db:3306/lafdrue
     depends_on:
@@ -43,9 +42,6 @@ services:
     volumes:
       - ./admin:/app
       - /app/node_modules
-
-
-
 
 volumes:
   mysql_data:

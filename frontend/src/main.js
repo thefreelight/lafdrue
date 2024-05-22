@@ -6,6 +6,8 @@ import store from './store';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import naive from 'naive-ui'; // 引入 naive-ui
+
 
 library.add(faShoppingCart);
 
@@ -15,6 +17,8 @@ const app = createApp(App);
 app.use(store);
 app.use(router);
 app.mount('#app');
+app.use(naive); // 使用 naive-ui
+
 
 // 在挂载之前加载购物车
 store.dispatch('cart/loadCart');

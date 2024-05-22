@@ -1,6 +1,8 @@
 <template>
-  <Navbar />
-  <router-view />
+  <n-message-provider>
+    <Navbar />
+    <router-view />
+  </n-message-provider>
 </template>
 
 <script>

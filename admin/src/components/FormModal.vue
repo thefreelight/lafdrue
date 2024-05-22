@@ -28,19 +28,42 @@
 import {ref, watch, toRefs} from 'vue';
 import InputField from './InputField.vue';
 
-const {title, inputs, model, onSave, onClose} = defineProps({
+const props = defineProps({
   title: String,
   inputs: Array,
   model: Object,
   onSave: Function,
-  onClose: Function
+  onClose: Function,
+  useVModel: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+// 解构props以方便使用
+const { title, inputs, model, onSave, onClose, useVModel } = props;
 
 const formData = ref({});
 
-watch(model, (newVal) => {
-  formData.value = {...newVal};
-}, {immediate: true});
+if (props.useVModel) {
+  watch(
+    () => props.modelValue,
+    (newVal) => {
+      formData.value = { ...newVal };
+    },
+    { immediate: true }
+  );
+
+  watch(formData, (newVal) => {
+    emit('update:modelValue', newVal);
+  }, { deep: true });
+} else {
+  watch(props.model, (newVal) => {
+    formData.value = {...newVal};
+  }, {immediate: true});
+}
+
+
 
 const closeModal = () => {
   onClose();
