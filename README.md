@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 # lafdru
+=======
+# lafdrue
+>>>>>>> dev
