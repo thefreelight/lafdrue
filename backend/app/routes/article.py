@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
-from app.schemas.article import Article, ArticleCreate
-from app.services.article import (
+from ..dependencies.database import get_db
+from ..models.article import Article as DBArticle
+from ..schemas.article import ArticleCreate, Article
+from ..services.article import (
     create_article, get_article, get_articles, update_article, delete_article
 )
-from app.dependencies.database import get_db
 
 router = APIRouter()
 
@@ -23,7 +24,7 @@ def read_article(article_id: int, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=Page[Article])
 def read_articles(db: Session = Depends(get_db)):
-    return paginate(db.query(Article))
+    return paginate(db.query(DBArticle))
 
 @router.put("/{article_id}", response_model=Article)
 def update_article_route(article_id: int, article: ArticleCreate, db: Session = Depends(get_db)):

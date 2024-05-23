@@ -16,8 +16,10 @@ library.add(faShoppingCart);
 const app = createApp(App);
 app.use(store);
 app.use(router);
-app.mount('#app');
 app.use(naive); // 使用 naive-ui
+
+
+app.mount('#app');
 
 
 // 在挂载之前加载购物车

@@ -19,12 +19,10 @@ from .routes import article  # 新增
 
 app = FastAPI()
 
-# 在启动应用前创建数据库表
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
 
-# 在这里定义异常处理器
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     print(f"OMG! The client sent invalid data!: {exc}")
@@ -35,10 +33,10 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 允许所有源
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # 允许所有方法
-    allow_headers=["*"],  # 允许所有头
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(product.router, prefix="/api/v1", tags=["products"])
@@ -53,5 +51,4 @@ app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
 app.include_router(article_category.router, prefix="/api/v1", tags=["article-categories"])  # 新增
 app.include_router(article.router, prefix="/api/v1", tags=["articles"])  # 新增
 
-# 在创建完所有路由后添加分页
 add_pagination(app)

@@ -22,17 +22,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import {ref, onMounted} from 'vue'
 import axios from '../axios'
-import { useMessage } from 'naive-ui'
+import {useMessage} from 'naive-ui'
 
 const articles = ref([])
 const message = useMessage()
 
 const fetchArticles = async () => {
   try {
-    const response = await axios.get('/api/v1/articles/')
-    articles.value = response.data.items
+    const response = await axios.get('/api/v1/articles/', {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    articles.value = response.data.items  // 从分页对象中提取文章列表
   } catch (error) {
     message.error('获取文章列表失败')
   }
