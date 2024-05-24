@@ -7,17 +7,19 @@ import os
 
 # 添加模型路径
 sys.path.append(str(Path(__file__).resolve().parents[2]))
-from backend.app.dependencies.database import Base  # 导入你的 Base
 
-# Alembic配置
+# 导入 Base 和所有模型
+from backend.app.dependencies.database import Base
+from backend.app.models import *
+
+# Alembic 配置
 config = context.config
 
 # 设置数据库URL
-database_url = os.getenv('DATABASE_URL')
-if database_url:
-    config.set_main_option('sqlalchemy.url', database_url)
+database_url = os.getenv('DATABASE_URL', 'mysql+mysqlconnector://root:123456@db:3306/lafdrue')
+config.set_main_option('sqlalchemy.url', database_url)
 
-# Python日志配置
+# Python 日志配置
 if config.config_file_name:
     fileConfig(config.config_file_name)
 

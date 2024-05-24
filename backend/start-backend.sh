@@ -25,39 +25,35 @@ echo "检查并运行数据库迁移..."
 python3 << END
 from alembic.config import Config
 from alembic import command
-from sqlalchemy import create_engine, inspect, MetaData
+from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 
 DATABASE_URL = "mysql+mysqlconnector://root:123456@db:3306/lafdrue"
+ALEMBIC_CFG_PATH = "/backend/alembic.ini"
 
-def column_exists(engine, table_name, column_name):
-    inspector = inspect(engine)
-    return column_name in [col['name'] for col in inspector.get_columns(table_name)]
+def check_and_upgrade():
+    try:
+        # 连接数据库
+        engine = create_engine(DATABASE_URL)
 
-try:
-    engine = create_engine(DATABASE_URL)
-    metadata = MetaData()
-    metadata.reflect(bind=engine)
+        # 检查数据库是否已应用所有迁移
+        alembic_cfg = Config(ALEMBIC_CFG_PATH)
+        command.upgrade(alembic_cfg, "head")
 
-    all_columns_exist = True
+        # 自动生成迁移脚本
+        command.revision(alembic_cfg, autogenerate=True, message="Auto migration")
 
-    with engine.connect() as connection:
-        for table in metadata.tables.values():
-            for column in table.columns:
-                if not column_exists(engine, table.name, column.name):
-                    all_columns_exist = False
-                    break
-            if not all_columns_exist:
-                break
+        # 应用新生成的迁移
+        command.upgrade(alembic_cfg, "head")
 
-        if all_columns_exist:
-            print("所有列都存在，跳过迁移。")
-        else:
-            alembic_cfg = Config("alembic.ini")
-            command.upgrade(alembic_cfg, "head")
-except SQLAlchemyError as e:
-    print(f"数据库错误: {e}")
-    sys.exit(1)
+    except SQLAlchemyError as e:
+        print(f"数据库错误: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"错误: {e}")
+        sys.exit(1)
+
+check_and_upgrade()
 END
 
 # 启动 FastAPI 应用并启用热重载
