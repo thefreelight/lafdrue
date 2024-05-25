@@ -7,17 +7,17 @@
 
     <!-- Tags Section -->
     <div class="flex justify-center space-x-4 mb-10">
-      <n-tag type="success" @click="filterCategory(null)">All</n-tag>
-      <n-tag v-for="category in categories" :key="category.id" :type="getTagType(category.name)" @click="filterCategory(category.id)">
+      <button @click="fetchArticles(null)" class="bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none">All</button>
+      <button v-for="category in categories" :key="category.id" @click="fetchArticles(category.id)" :class="getTagClass(category.name)">
         {{ category.name }}
-      </n-tag>
+      </button>
     </div>
 
     <!-- Articles Section -->
-    <div v-if="filteredArticles.length === 0" class="text-gray-500 text-center text-xl mt-10">暂无文章</div>
+    <div v-if="articles.length === 0" class="text-gray-500 text-center text-xl mt-10">暂无文章</div>
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
-          v-for="article in filteredArticles"
+          v-for="article in articles"
           :key="article.id"
           class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 shadow-lg p-6"
       >
@@ -25,7 +25,7 @@
           <img :src="getAvatar(article.author)" alt="Author" class="w-10 h-10 rounded-full mr-4">
           <div>
             <span class="text-gray-400">{{ article.author || 'Unknown' }}</span>
-            <n-tag type="success" class="ml-2">{{ getCategoryName(article.category_id) }}</n-tag>
+            <span class="ml-2 bg-green-500 text-white px-2 py-1 rounded-full">{{ getCategoryName(article.category_id) }}</span>
           </div>
         </div>
         <div :class="{'p-6': article.image, 'p-6 w-full': !article.image}">
@@ -43,23 +43,21 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from '../axios'
-import { useMessage, NTag } from 'naive-ui'
+import { useMessage } from 'naive-ui'
 
 const articles = ref([])
-const filteredArticles = ref([])
 const categories = ref([])
-const selectedCategory = ref(null)
 const message = useMessage()
 
-const fetchArticles = async () => {
+const fetchArticles = async (categoryId) => {
   try {
     const response = await axios.get('/api/v1/articles/', {
+      params: categoryId ? { category_id: categoryId } : {},
       headers: {
         'Content-Type': 'application/json'
       }
     })
     articles.value = response.data.items
-    filterCategory(null)
   } catch (error) {
     message.error('获取文章列表失败')
   }
@@ -78,26 +76,17 @@ const fetchCategories = async () => {
   }
 }
 
-const filterCategory = (categoryId) => {
-  selectedCategory.value = categoryId
-  if (categoryId === null) {
-    filteredArticles.value = articles.value
-  } else {
-    filteredArticles.value = articles.value.filter(article => article.category_id === categoryId)
-  }
-}
-
 const getCategoryName = (categoryId) => {
   const category = categories.value.find(c => c.id === categoryId)
   return category ? category.name : 'Unknown'
 }
 
-const getTagType = (categoryName) => {
+const getTagClass = (categoryName) => {
   switch (categoryName) {
-    case 'Genesis': return 'info'
-    case '碎碎念': return 'warning'
-    case 'Help': return 'primary'
-    default: return 'default'
+    case 'Genesis': return 'bg-blue-500 text-white px-4 py-2 rounded-full focus:outline-none'
+    case '碎碎念': return 'bg-yellow-500 text-white px-4 py-2 rounded-full focus:outline-none'
+    case 'Help': return 'bg-purple-500 text-white px-4 py-2 rounded-full focus:outline-none'
+    default: return 'bg-gray-500 text-white px-4 py-2 rounded-full focus:outline-none'
   }
 }
 
@@ -110,7 +99,7 @@ const getAvatar = (author) => {
 }
 
 onMounted(() => {
-  fetchArticles()
+  fetchArticles(null)
   fetchCategories()
 })
 </script>
