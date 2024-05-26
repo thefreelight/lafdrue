@@ -41,18 +41,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import axios from '../axios'
 import { useMessage } from 'naive-ui'
 
 const articles = ref([])
 const categories = ref([])
 const message = useMessage()
+const selectedLanguage = ref('en')  // 默认语言
 
 const fetchArticles = async (categoryId) => {
   try {
     const response = await axios.get('/api/v1/articles/', {
-      params: categoryId ? { category_id: categoryId } : {},
+      params: {
+        category_id: categoryId,
+        language: selectedLanguage.value
+      },
       headers: {
         'Content-Type': 'application/json'
       }
@@ -66,6 +70,9 @@ const fetchArticles = async (categoryId) => {
 const fetchCategories = async () => {
   try {
     const response = await axios.get('/api/v1/article-categories/', {
+      params: {
+        language: selectedLanguage.value
+      },
       headers: {
         'Content-Type': 'application/json'
       }
@@ -90,7 +97,6 @@ const getTagClass = (categoryName) => {
   }
 }
 
-// 生成默认头像的函数
 const getAvatar = (author) => {
   if (!author) {
     return 'https://via.placeholder.com/50'  // 默认头像 URL
@@ -98,9 +104,26 @@ const getAvatar = (author) => {
   return `https://ui-avatars.com/api/?name=${author}&background=random`  // 使用 ui-avatars 生成头像
 }
 
+const onLanguageChanged = (language) => {
+  selectedLanguage.value = language;
+  fetchArticles(null);
+  fetchCategories();
+}
+
 onMounted(() => {
   fetchArticles(null)
   fetchCategories()
+  // 监听全局语言变化事件
+  window.addEventListener('language-change', (event) => {
+    onLanguageChanged(event.detail);
+  });
+})
+
+onBeforeUnmount(() => {
+  // 取消全局语言变化事件监听
+  window.removeEventListener('language-change', (event) => {
+    onLanguageChanged(event.detail);
+  });
 })
 </script>
 

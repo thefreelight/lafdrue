@@ -2,20 +2,25 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 import router from './router'
-import './style.css';  // 确保路径与您的文件结构相匹配
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUserSecret } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import naive from 'naive-ui'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faUserSecret, faSignOutAlt, faTachometerAlt, faUsers, faChevronDown, faHandshake, faFileAlt } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
+// 添加图标到库
+library.add(faUserSecret, faSignOutAlt, faTachometerAlt, faUsers, faChevronDown, faHandshake, faFileAlt)
 
-library.add(faUserSecret) // 添加图标到库
+const app = createApp(App)
 
-
-const app = createApp(App);
 // 全局注册图标组件
-app.component('font-awesome-icon', FontAwesomeIcon);
+app.component('font-awesome-icon', FontAwesomeIcon)
 
-app.use(router);
-app.mount('#app');
+// 使用 naive-ui
+app.use(naive)
 
 
+
+// 使用路由
+app.use(router)
+
+app.mount('#app')

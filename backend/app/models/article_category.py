@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from ..dependencies.database import Base
 
-
 class ArticleCategory(Base):
     __tablename__ = "article_categories"
 

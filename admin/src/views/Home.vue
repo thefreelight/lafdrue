@@ -12,8 +12,8 @@
       <aside class="bg-gray-700 p-4 w-64 space-y-2">
         <div v-for="item in navigation" :key="item.text" class="group">
           <div
-            @click="item.children ? toggle(item) : navigateTo(item.path)"
-            class="flex items-center text-gray-200 hover:text-white hover:bg-gray-600 p-2 rounded cursor-pointer"
+              @click="item.children ? toggle(item) : navigateTo(item.path)"
+              class="flex items-center text-gray-200 hover:text-white hover:bg-gray-600 p-2 rounded cursor-pointer"
           >
             <font-awesome-icon :icon="[item.iconPrefix, item.iconName]" class="mr-3" />
             {{ item.text }}
@@ -21,10 +21,10 @@
           </div>
           <div v-if="item.isOpen" class="pl-4">
             <router-link
-              v-for="subItem in item.children"
-              :key="subItem.text"
-              :to="subItem.path"
-              class="block text-gray-200 hover:text-white hover:bg-gray-600 p-2 rounded"
+                v-for="subItem in item.children"
+                :key="subItem.text"
+                :to="subItem.path"
+                class="block text-gray-200 hover:text-white hover:bg-gray-600 p-2 rounded"
             >
               {{ subItem.text }}
             </router-link>
@@ -42,10 +42,10 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faSignOutAlt, faTachometerAlt, faUsers, faChevronDown, faHandshake } from '@fortawesome/free-solid-svg-icons'
+import { faSignOutAlt, faTachometerAlt, faUsers, faChevronDown, faHandshake, faFileAlt } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 
-library.add(faSignOutAlt, faTachometerAlt, faUsers, faChevronDown, faHandshake)
+library.add(faSignOutAlt, faTachometerAlt, faUsers, faChevronDown, faHandshake, faFileAlt)
 
 const router = useRouter()
 const route = useRoute()
@@ -63,20 +63,20 @@ const navigation = ref([
       // 更多子菜单项...
     ]
   },
-    {
+  {
     text: '交易管理',
-    iconName: 'handshake', // 选择一个适合的FontAwesome图标
+    iconName: 'handshake',
     iconPrefix: 'fas',
     isOpen: false,
     children: [
       { path: '/category/', text: '商品分类' },
       { path: '/product/', text: '商品管理' },
       { path: '/card/', text: '卡密管理' },
-      { path: '/order/', text: '订单管理' },
-      // ... 可能的其他交易相关管理 ...
+      { path: '/order/', text: '订单管理' }
+      // 可能的其他交易相关管理...
     ]
   },
-  // 其他导航项...
+  { path: '/articles', text: '文章管理', iconName: 'file-alt', iconPrefix: 'fas', isOpen: false } // 新增文章管理导航项
 ])
 
 function toggle(item) {

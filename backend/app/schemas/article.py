@@ -1,11 +1,11 @@
 from pydantic import BaseModel
-from typing import Optional
 
 class ArticleBase(BaseModel):
     title: str
     content: str
-    author: Optional[str] = None
-    category_id: Optional[int] = None
+    author: str = None
+    category_id: int
+    language: str
 
 class ArticleCreate(ArticleBase):
     pass
