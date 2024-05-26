@@ -10,7 +10,7 @@
         <Cart />
         <n-dropdown trigger="hover" @select="changeLanguage" :options="languageOptions">
           <button class="flex items-center text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium">
-            {{ selectedLanguage }}
+            <span class="text-lg">{{ selectedLanguage.icon }}</span>
             <n-icon size="18" class="ml-1">
               <template #default>
                 <svg fill="currentColor" viewBox="0 0 20 20">
@@ -25,37 +25,24 @@
   </nav>
 </template>
 
-<script>
-import Cart from './Cart.vue';
+<script setup>
 import { ref } from 'vue';
 import { NDropdown, NIcon } from 'naive-ui';
+import Cart from './Cart.vue';
 
-export default {
-  components: {
-    Cart,
-    NDropdown,
-    NIcon
-  },
-  name: 'Navbar',
-  setup() {
-    const selectedLanguage = ref('English'); // 默认语言为英语
+const selectedLanguage = ref({ label: 'English', icon: '🇺🇸' }); // 默认语言为英语
 
-    const languageOptions = [
-      { label: 'English', key: 'en' },
-      { label: '中文', key: 'zh' }
-    ];
+const languageOptions = [
+  { label: 'English', key: 'en', icon: '🇺🇸' },
+  { label: '中文', key: 'zh', icon: '🇨🇳' }
+];
 
-    const changeLanguage = (key) => {
-      selectedLanguage.value = key === 'en' ? 'English' : '中文';
-      const event = new CustomEvent('language-change', { detail: key });
-      window.dispatchEvent(event);
-    };
-
-    return {
-      selectedLanguage,
-      languageOptions,
-      changeLanguage
-    };
+const changeLanguage = (key) => {
+  const selected = languageOptions.find(option => option.key === key);
+  if (selected) {
+    selectedLanguage.value = selected;
+    const event = new CustomEvent('language-change', { detail: key });
+    window.dispatchEvent(event);
   }
 };
 </script>
