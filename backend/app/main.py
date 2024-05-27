@@ -14,8 +14,9 @@ from .routes import payment_callback
 from .routes import user
 from .routes import admin
 from .routes import auth
-from .routes import article_category  # 新增
-from .routes import article  # 新增
+from .routes import article_category
+from .routes import article
+from .routes import language  # 新增
 
 app = FastAPI()
 
@@ -48,7 +49,8 @@ app.include_router(payment_callback.router, prefix="/api/v1", tags=["payment_cal
 app.include_router(user.router, prefix="/api/v1", tags=["user"])
 app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
 app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
-app.include_router(article_category.router, prefix="/api/v1", tags=["article-categories"])  # 新增
-app.include_router(article.router, prefix="/api/v1", tags=["articles"])  # 新增
+app.include_router(article_category.router, prefix="/api/v1", tags=["article-categories"])
+app.include_router(article.router, prefix="/api/v1", tags=["articles"])
+app.include_router(language.router, prefix="/api/v1", tags=["language"])  # 新增
 
 add_pagination(app)
