@@ -41,9 +41,9 @@
 
 <script setup>
 import {ref, onMounted, reactive} from 'vue';
-import ListTable from '../components/ListTable.vue';
-import FormModal from "../components/FormModal.vue";
-import DeleteConfirmationModal from '../components/DeleteConfirmationModal.vue';
+import ListTable from '../components/common/ListTable.vue';
+import FormModal from "../components/modals/FormModal.vue";
+import DeleteConfirmationModal from '../components/modals/DeleteConfirmationModal.vue';
 import axios from '../axios';
 
 const membershipLevels = ref([]);

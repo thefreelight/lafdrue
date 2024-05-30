@@ -26,7 +26,7 @@
 
 <script setup>
 import {ref, watch, toRefs} from 'vue';
-import InputField from './InputField.vue';
+import InputField from '../common/InputField.vue';
 
 const props = defineProps({
   title: String,

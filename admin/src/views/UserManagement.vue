@@ -73,11 +73,11 @@
 <script setup>
 import axios from '../axios';
 import {ref, computed, watch, onMounted, reactive} from 'vue';
-import ListTable from '../components/ListTable.vue';
-import DeleteConfirmationModal from '../components/DeleteConfirmationModal.vue';
-import Pagination from '../components/Pagination.vue';
-import FormModal from '../components/FormModal.vue';
-import SearchComponent from '../components/SearchComponent.vue';
+import ListTable from '../components/common/ListTable.vue';
+import DeleteConfirmationModal from '../components/modals/DeleteConfirmationModal.vue';
+import Pagination from '../components/common/Pagination.vue';
+import FormModal from '../components/modals/FormModal.vue';
+import SearchComponent from '../components/common/SearchComponent.vue';
 
 
 const users = ref([]);

@@ -52,11 +52,11 @@
 <script setup>
 import {ref, reactive, onMounted, watch, computed} from 'vue';
 import axios from '../axios';
-import ListTable from '../components/ListTable.vue';
-import Pagination from '../components/Pagination.vue';
-import FormModal from '../components/FormModal.vue';
-import SearchComponent from '../components/SearchComponent.vue';
-import DeleteConfirmationModal from '../components/DeleteConfirmationModal.vue';
+import ListTable from '../components/common/ListTable.vue';
+import Pagination from '../components/common/Pagination.vue';
+import FormModal from '../components/modals/FormModal.vue';
+import SearchComponent from '../components/common/SearchComponent.vue';
+import DeleteConfirmationModal from '../components/modals/DeleteConfirmationModal.vue';
 
 const products = ref([]);
 const currentProduct = ref({});

@@ -60,7 +60,7 @@ const changeLanguage = (key) => {
 
 // 初始化时加载默认语言
 onMounted(() => {
-  console.log('Component mounted, fetching initial translations'); // 
+  console.log('Component mounted, fetching initial translations'); //
   fetchTranslations(selectedLanguage.value.key);
 });
 </script>

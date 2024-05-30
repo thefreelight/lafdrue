@@ -3,8 +3,8 @@
     <header class="bg-gray-800 text-white py-4 px-6 flex justify-between items-center">
       <h1 class="text-xl font-semibold">LAFDRUE后台管理系统</h1>
       <nav>
-        <button @click="logout" class="text-gray-200 hover:text-gray-400">
-          <font-awesome-icon icon="sign-out-alt" /> 退出
+        <button @click="logout" class="text-gray-200 hover:text-gray-400 flex items-center">
+          <font-awesome-icon icon="sign-out-alt" class="mr-2" /> 退出
         </button>
       </nav>
     </header>
@@ -17,14 +17,14 @@
           >
             <font-awesome-icon :icon="[item.iconPrefix, item.iconName]" class="mr-3" />
             {{ item.text }}
-            <font-awesome-icon v-if="item.children" icon="chevron-down" class="ml-auto transition-transform" :class="{ 'rotate-180': item.isOpen }" />
+            <font-awesome-icon v-if="item.children" icon="chevron-down" class="ml-auto transition-transform duration-300" :class="{ 'rotate-180': item.isOpen }" />
           </div>
-          <div v-if="item.isOpen" class="pl-4">
+          <div v-if="item.isOpen" class="pl-4 space-y-1">
             <router-link
                 v-for="subItem in item.children"
                 :key="subItem.text"
                 :to="subItem.path"
-                class="block text-gray-200 hover:text-white hover:bg-gray-600 p-2 rounded"
+                class="block text-gray-200 hover:text-white hover:bg-gray-600 p-2 rounded transition-colors duration-300"
             >
               {{ subItem.text }}
             </router-link>
