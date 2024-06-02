@@ -18,8 +18,6 @@ app.component('font-awesome-icon', FontAwesomeIcon)
 // 使用 naive-ui
 app.use(naive)
 
-
-
 // 使用路由
 app.use(router)
 

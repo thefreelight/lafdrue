@@ -7,7 +7,7 @@
           <label :for="input.model" class="block text-gray-700 text-sm font-bold mb-2">
             {{ input.label }}
           </label>
-          <input-field :input="input" v-model="formData[input.model]"/>
+          <input-field :input="input" v-model="formData[input.model]" />
         </div>
         <div class="flex justify-end pt-2">
           <button type="button" @click="closeModal"
@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import {ref, watch, toRefs} from 'vue';
+import { ref, watch } from 'vue';
 import InputField from '../common/InputField.vue';
 
 const props = defineProps({
@@ -40,30 +40,28 @@ const props = defineProps({
   },
 });
 
-// 解构props以方便使用
-const { title, inputs, model, onSave, onClose, useVModel } = props;
+const emit = defineEmits(['update:modelValue']);
 
+const { title, inputs, model, onSave, onClose, useVModel } = props;
 const formData = ref({});
 
-if (props.useVModel) {
+if (useVModel) {
   watch(
-    () => props.modelValue,
-    (newVal) => {
-      formData.value = { ...newVal };
-    },
-    { immediate: true }
+      () => props.modelValue,
+      (newVal) => {
+        formData.value = { ...newVal };
+      },
+      { immediate: true }
   );
 
   watch(formData, (newVal) => {
     emit('update:modelValue', newVal);
   }, { deep: true });
 } else {
-  watch(props.model, (newVal) => {
-    formData.value = {...newVal};
-  }, {immediate: true});
+  watch(model, (newVal) => {
+    formData.value = { ...newVal };
+  }, { immediate: true });
 }
-
-
 
 const closeModal = () => {
   onClose();

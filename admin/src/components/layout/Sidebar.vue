@@ -60,7 +60,16 @@ const navigation = ref([
       // 可能的其他交易相关管理...
     ]
   },
-  { path: '/articles', text: '文章管理', iconName: 'file-alt', iconPrefix: 'fas', isOpen: false } // 新增文章管理导航项
+  {
+    text: '内容管理',
+    iconName: 'file-alt',
+    iconPrefix: 'fas',
+    isOpen: false,
+    children: [
+      { path: '/articles', text: '文章管理' },
+      { path: '/category', text: '分类管理' }
+    ]
+  }
 ])
 
 function toggle(item) {

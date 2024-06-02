@@ -1,20 +1,22 @@
 <template>
-  <div class="min-h-screen flex flex-col">
-    <header class="bg-gray-800 text-white py-4 px-6 flex justify-between items-center">
-      <h1 class="text-xl font-semibold">LAFDRUE后台管理系统</h1>
-      <nav>
-        <button @click="logout" class="text-gray-200 hover:text-gray-400 flex items-center">
-          <font-awesome-icon icon="sign-out-alt" class="mr-2" /> 退出
-        </button>
-      </nav>
-    </header>
-    <div class="flex flex-1">
-      <Sidebar />
-      <main class="flex-1 p-6 overflow-auto">
-        <router-view></router-view>
-      </main>
+  <n-message-provider>
+    <div class="min-h-screen flex flex-col">
+      <header class="bg-gray-800 text-white py-4 px-6 flex justify-between items-center">
+        <h1 class="text-xl font-semibold">LAFDRUE后台管理系统</h1>
+        <nav>
+          <button @click="logout" class="text-gray-200 hover:text-gray-400 flex items-center">
+            <font-awesome-icon icon="sign-out-alt" class="mr-2" /> 退出
+          </button>
+        </nav>
+      </header>
+      <div class="flex flex-1">
+        <Sidebar />
+        <main class="flex-1 p-6 overflow-auto">
+          <router-view></router-view>
+        </main>
+      </div>
     </div>
-  </div>
+  </n-message-provider>
 </template>
 
 <script setup>

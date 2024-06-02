@@ -1,10 +1,13 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+// vite.config.js
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  server: {
-    port: 3000, // 将端口号设置为 3000 或你想要的任何端口号
+  optimizeDeps: {
+    include: ['@wangeditor/editor-for-vue']
   },
-})
+  server: {
+    port: 3000, // 确保端口正确
+  }
+});
