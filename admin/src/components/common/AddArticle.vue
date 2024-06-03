@@ -96,7 +96,7 @@ const editorConfig = {
   placeholder: '请输入内容...',
   MENU_CONF: {
     'video': {
-      fieldName: 'your_video_field_name',
+      fieldName: 'video',
       maxFileSize: 50 * 1024 * 1024, // 50MB
       server: '/your_video_upload_url', // 视频上传接口地址
     },
@@ -105,7 +105,7 @@ const editorConfig = {
 const mode = 'default';
 
 const handleCreated = (editor) => {
-  editorRef.value = editor; // 记录 editor 实例，重要！
+  editorRef.value = Object.seal(editor); // 记录 editor 实例，重要！
 };
 
 const handleSubmit = () => {
