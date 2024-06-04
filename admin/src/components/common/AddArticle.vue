@@ -80,6 +80,7 @@
 import { ref, watch } from 'vue';
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue';
 import '@wangeditor/editor/dist/css/style.css'; // 引入 css
+import axios from '../../axios.js';
 
 const props = defineProps({
   title: String,
@@ -95,10 +96,42 @@ const toolbarConfig = {};
 const editorConfig = {
   placeholder: '请输入内容...',
   MENU_CONF: {
-    'video': {
-      fieldName: 'video',
+    uploadImage: {
+      server: 'http://localhost:8000/api/v1/upload-image', // 使用绝对路径
+      fieldName: 'file', // 图片上传字段名
+      maxFileSize: 2 * 1024 * 1024, // 2MB
+      headers: { Authorization: 'Bearer token' }, // 可选，设置请求头
+      maxNumberOfFiles: 5, // 可选，设置最大上传文件数
+      allowedFileTypes: ['image/*'], // 可选，设置可上传的文件类型
+      onSuccess(file, res) {
+        const url = res.data.url; // 假设后端返回的响应中包含图片的 URL
+        if (editorRef.value) {
+          editorRef.value.insertImage(url);
+        }
+        console.log('图片上传成功', file, res);
+      },
+      onFailed(file, res) {
+        console.log('图片上传失败', file, res);
+      },
+      onError(file, err, res) {
+        console.log('图片上传错误', file, err, res);
+      },
+    },
+    uploadVideo: {
+      server: 'http://localhost:8000/api/v1/upload-video', // 使用绝对路径
+      fieldName: 'file', // 视频上传字段名
       maxFileSize: 50 * 1024 * 1024, // 50MB
-      server: '/your_video_upload_url', // 视频上传接口地址
+      headers: { Authorization: 'Bearer token' }, // 可选，设置请求头
+      allowedFileTypes: ['video/*'], // 可选，设置可上传的文件类型
+      onSuccess(file, res) {
+        console.log('视频上传成功', file, res);
+      },
+      onFailed(file, res) {
+        console.log('视频上传失败', file, res);
+      },
+      onError(file, err, res) {
+        console.log('视频上传错误', file, err, res);
+      },
     },
   },
 };

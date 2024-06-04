@@ -17,6 +17,7 @@ from .routes import auth
 from .routes import article_category
 from .routes import article
 from .routes import language  # 新增
+from .routes import upload  # 新增
 
 app = FastAPI()
 
@@ -52,5 +53,6 @@ app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
 app.include_router(article_category.router, prefix="/api/v1", tags=["article-categories"])
 app.include_router(article.router, prefix="/api/v1", tags=["articles"])
 app.include_router(language.router, prefix="/api/v1", tags=["language"])  # 新增
+app.include_router(upload.router, prefix="/api/v1", tags=["upload"])  # 新增
 
 add_pagination(app)

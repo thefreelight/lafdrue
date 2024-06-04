@@ -57,3 +57,6 @@ instance/
 
 # Alembic
 alembic/versions/
+
+#uploads
+backend/uploads/
